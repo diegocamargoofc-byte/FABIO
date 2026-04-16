@@ -8,7 +8,7 @@ interface WelcomeScreenProps {
   onStart: () => void
 }
 
-const LOGO_SRC     = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9445.PNG-N9T7xNmMLXKf0pEjipobXSb0q2Pwdj.png"
+const LOGO_SRC     = "/logo-il-negocios.png"
 const GOLD         = "rgba(180,148,60,1)"
 const GOLD_DIM     = "rgba(180,148,60,0.72)"
 const GOLD_MUTED   = "rgba(180,148,60,0.28)"
@@ -114,11 +114,11 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           <Image
             src={LOGO_SRC}
             alt="IL Negócios — Performance & Resultado"
-            width={144} height={46} priority
+            width={180} height={58} priority
             className="object-contain"
             style={{
-              height: "28px", width: "auto",
-              filter: "brightness(1.18) contrast(1.06) drop-shadow(0 1px 10px rgba(180,148,60,0.22))",
+              height: "36px", width: "auto",
+              filter: "brightness(1.18) contrast(1.06) drop-shadow(0 1px 14px rgba(180,148,60,0.28))",
             }}
           />
         </motion.div>
@@ -148,9 +148,9 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           {/* Left column */}
           <div
             className="flex-1 min-w-0 flex items-center"
-            style={{ padding: "0 clamp(64px, 7vw, 130px)" }}
+            style={{ padding: "0 clamp(48px, 5.5vw, 96px)" }}
           >
-            <div style={{ width: "100%", maxWidth: "960px" }}>
+            <div style={{ width: "100%", maxWidth: "680px" }}>
               <DesktopContent onStart={onStart} />
             </div>
           </div>
@@ -515,84 +515,117 @@ function RightPanel() {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.85, delay: 0.22, ease }}
       style={{
-        padding: "0 clamp(32px, 3.2vw, 56px)",
-        maxWidth: "100%",
+        padding: "clamp(40px, 5vh, 72px) clamp(32px, 3.2vw, 52px)",
         width: "100%",
         display: "flex",
         flexDirection: "column",
+        height: "100%",
+        justifyContent: "center",
       }}
     >
       {/* Logo */}
-      <Image
-        src={LOGO_SRC}
-        alt="IL Negócios"
-        width={148} height={48}
-        className="object-contain"
-        style={{
-          height: "32px", width: "auto", marginBottom: "32px",
-          filter: "brightness(1.2) contrast(1.06) drop-shadow(0 2px 16px rgba(180,148,60,0.32))",
-        }}
-      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.9, delay: 0.18 }}
+        style={{ marginBottom: "clamp(24px, 3.5vh, 44px)" }}
+      >
+        <Image
+          src={LOGO_SRC}
+          alt="IL Negócios"
+          width={220} height={72}
+          className="object-contain object-left"
+          style={{
+            height: "clamp(44px, 5.5vh, 64px)", width: "auto",
+            filter: "brightness(1.22) contrast(1.08) drop-shadow(0 2px 20px rgba(180,148,60,0.38))",
+          }}
+        />
+      </motion.div>
 
       {/* Separador */}
       <div
         style={{
           height: "1px",
-          background: "linear-gradient(90deg, rgba(180,148,60,0.32), rgba(180,148,60,0.08), transparent)",
-          marginBottom: "36px",
+          background: "linear-gradient(90deg, rgba(180,148,60,0.38), rgba(180,148,60,0.08), transparent)",
+          marginBottom: "clamp(24px, 3.5vh, 44px)",
         }}
       />
 
-      {/* Pilares numerados */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+      {/* Pilares em cards */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "clamp(12px, 1.8vh, 20px)" }}>
         {pillars.map(({ num, label, desc }, i) => (
           <motion.div
             key={num}
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.33 + i * 0.1, duration: 0.65, ease }}
+            style={{
+              border: "1px solid rgba(180,148,60,0.16)",
+              borderRadius: "6px",
+              background: "linear-gradient(135deg, rgba(180,148,60,0.06) 0%, rgba(180,148,60,0.02) 100%)",
+              padding: "clamp(14px, 2vh, 22px) clamp(16px, 1.8vw, 24px)",
+              position: "relative",
+              overflow: "hidden",
+            }}
           >
-            <div style={{ display: "flex", alignItems: "baseline", gap: "14px", marginBottom: "8px" }}>
+            {/* Accent corner */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "3px",
+                height: "100%",
+                background: "linear-gradient(180deg, rgba(180,148,60,0.55) 0%, rgba(180,148,60,0.08) 100%)",
+                borderRadius: "6px 0 0 6px",
+              }}
+            />
+            <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "6px", paddingLeft: "12px" }}>
               <span
                 style={{
                   fontFamily: SERIF,
-                  fontSize: "38px",
+                  fontSize: "clamp(28px, 3.2vw, 40px)",
                   fontWeight: 300,
                   fontStyle: "italic",
-                  color: "rgba(180,148,60,0.28)",
+                  color: "rgba(180,148,60,0.35)",
                   lineHeight: 1,
                   letterSpacing: "-0.01em",
-                  minWidth: "44px",
+                  minWidth: "38px",
                 }}
               >
                 {num}
               </span>
               <span
                 style={{
-                  fontSize: "14px",
-                  fontWeight: 600,
+                  fontSize: "clamp(11px, 1vw, 13px)",
+                  fontWeight: 700,
                   color: TEXT_PRIMARY,
-                  letterSpacing: "0.04em",
+                  letterSpacing: "0.1em",
                   textTransform: "uppercase",
                 }}
               >
                 {label}
               </span>
             </div>
-            <p style={{ fontSize: "12.5px", lineHeight: "1.68", color: "rgba(240,237,230,0.44)", paddingLeft: "58px" }}>
+            <p style={{
+              fontSize: "clamp(11px, 0.9vw, 13px)",
+              lineHeight: "1.6",
+              color: "rgba(240,237,230,0.48)",
+              paddingLeft: "12px",
+            }}>
               {desc}
             </p>
           </motion.div>
         ))}
       </div>
 
-      {/* Separador */}
+      {/* Rodapé */}
       <div
         style={{
           height: "1px",
-          background: "linear-gradient(90deg, rgba(180,148,60,0.24), rgba(180,148,60,0.06), transparent)",
-          marginTop: "36px",
-          marginBottom: "22px",
+          background: "linear-gradient(90deg, rgba(180,148,60,0.22), rgba(180,148,60,0.05), transparent)",
+          marginTop: "clamp(24px, 3vh, 40px)",
+          marginBottom: "16px",
         }}
       />
 
@@ -600,7 +633,7 @@ function RightPanel() {
         style={{
           fontSize: "9px",
           fontWeight: 600,
-          letterSpacing: "0.26em",
+          letterSpacing: "0.28em",
           textTransform: "uppercase",
           color: "rgba(180,148,60,0.45)",
         }}
