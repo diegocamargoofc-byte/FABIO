@@ -393,13 +393,13 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
             letterSpacing: "-0.028em",
           } as React.CSSProperties}
         >
-          {/* Line 1 */}
+          {/* Line 1 — luz rasante vindo do topo-esquerdo */}
           <span
             style={{
               display: "block",
               fontSize: "clamp(44px, min(5.8vw, 7.5vh), 104px)",
               fontWeight: 400,
-              background: "linear-gradient(135deg, #F8F4EC 0%, #DDD5C0 60%, #C4BBA8 100%)",
+              background: "linear-gradient(118deg, #FDFAF3 0%, #EDE5D0 28%, #D6CCBA 62%, #B8B0A0 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -407,14 +407,14 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
           >
             Antes de avançarmos,
           </span>
-          {/* Line 2 — dominant */}
+          {/* Line 2 — dominant — reflexo metálico mais saturado no ápice */}
           <span
             style={{
               display: "block",
               fontSize: "clamp(52px, min(7.2vw, 9.5vh), 128px)",
               fontWeight: 600,
               fontStyle: "italic",
-              background: "linear-gradient(135deg, #D4AC50 0%, #F2D06A 44%, #C08030 100%)",
+              background: "linear-gradient(118deg, #E8C860 0%, #F8E080 30%, #D4A838 56%, #9A7420 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -423,13 +423,13 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
           >
             preciso entender
           </span>
-          {/* Line 3 */}
+          {/* Line 3 — luz ligeiramente menos intensa que L1 */}
           <span
             style={{
               display: "block",
               fontSize: "clamp(38px, min(4.9vw, 6.5vh), 88px)",
               fontWeight: 400,
-              background: "linear-gradient(135deg, #F8F4EC 0%, #DDD5C0 60%, #C4BBA8 100%)",
+              background: "linear-gradient(118deg, #F5F0E8 0%, #DDD5C0 40%, #C4BAA8 72%, #A8A094 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -577,15 +577,41 @@ function RightPanel() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.33 + i * 0.1, duration: 0.65, ease }}
             style={{
-              border: "1px solid rgba(180,148,60,0.22)",
+              border: "1px solid rgba(180,148,60,0.24)",
               borderRadius: "6px",
-              background: "linear-gradient(135deg, rgba(180,148,60,0.09) 0%, rgba(180,148,60,0.03) 100%)",
+              background: "linear-gradient(148deg, rgba(255,248,220,0.055) 0%, rgba(180,148,60,0.08) 35%, rgba(180,148,60,0.02) 100%)",
               padding: "clamp(14px, 2vh, 22px) clamp(16px, 1.8vw, 24px)",
               position: "relative",
               overflow: "hidden",
-              boxShadow: "0 1px 18px rgba(180,148,60,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+              boxShadow: [
+                "0 1px 18px rgba(180,148,60,0.07)",
+                "inset 0 1px 0 rgba(255,255,255,0.10)",
+                "inset 1px 0 0 rgba(255,255,255,0.04)",
+              ].join(", "),
             }}
           >
+            {/* Catch-light — linha horizontal topo */}
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                top: 0, left: "12%", right: "12%",
+                height: "1px",
+                background: "linear-gradient(90deg, transparent, rgba(255,248,220,0.30), rgba(255,255,255,0.18), transparent)",
+                pointerEvents: "none",
+              }}
+            />
+            {/* Reflexo diagonal no canto superior direito */}
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                top: 0, right: 0,
+                width: "40%", height: "60%",
+                background: "radial-gradient(ellipse at 90% 0%, rgba(255,248,200,0.06) 0%, transparent 65%)",
+                pointerEvents: "none",
+              }}
+            />
             {/* Accent corner */}
             <div
               style={{
@@ -594,7 +620,7 @@ function RightPanel() {
                 left: 0,
                 width: "3px",
                 height: "100%",
-                background: "linear-gradient(180deg, rgba(180,148,60,0.55) 0%, rgba(180,148,60,0.08) 100%)",
+                background: "linear-gradient(180deg, rgba(220,186,90,0.80) 0%, rgba(180,148,60,0.22) 60%, rgba(180,148,60,0.04) 100%)",
                 borderRadius: "6px 0 0 6px",
               }}
             />

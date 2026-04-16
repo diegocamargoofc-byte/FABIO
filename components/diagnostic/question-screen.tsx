@@ -27,11 +27,23 @@ function applyPhoneMask(raw: string): string {
 }
 void applyPhoneMask
 
-function validateField(type: Question["type"], value: string, extra?: string): string | null {
+function validateField(type: Question["type"], value: string, extra?: string, questionId?: number): string | null {
   const v = value.trim()
   if (!v) return "Este campo é obrigatório"
   if (type === "name") {
-    if (!/^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(v)) return "Digite apenas letras, sem números"
+    if (!/^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(v)) return "Por favor, informe seu nome completo."
+    const words = v.split(/\s+/).filter(Boolean)
+    if (words.length < 2) return "Por favor, informe seu nome completo."
+    return null
+  }
+  if (type === "email") {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return "Digite um e-mail válido."
+    return null
+  }
+  if (type === "text" && questionId === 19) {
+    if (v.includes("instagram.com")) return "Informe seu @ do Instagram corretamente."
+    if (!v.startsWith("@")) return "Informe seu @ do Instagram corretamente."
+    if (v.length < 4) return "Informe seu @ do Instagram corretamente."
     return null
   }
   if (type === "select-with-text") {
@@ -105,12 +117,14 @@ export function QuestionScreen({
   const inputRef      = useRef<HTMLInputElement>(null)
   const textareaRef   = useRef<HTMLTextAreaElement>(null)
 
-  const errorMessage = touched ? validateField(question.type, value, extraValue) : null
+  const errorMessage = touched ? validateField(question.type, value, extraValue, question.id) : null
   const hasError     = !!errorMessage
+  const isValid      = touched && !errorMessage && value.trim().length > 0
 
   const handleChange = useCallback(
     (raw: string) => {
       if (question.type === "name") onChange(raw.replace(/[0-9]/g, ""))
+      else if (question.type === "email") onChange(raw.trim().toLowerCase())
       else onChange(raw)
     },
     [question.type, onChange]
@@ -148,7 +162,7 @@ export function QuestionScreen({
     if (canProceed) onAutoAdvance(value, extraValue)
   }
 
-  const isTextType       = ["text", "name", "textarea"].includes(question.type)
+  const isTextType       = ["text", "name", "email", "textarea"].includes(question.type)
   const isSelectType     = question.type === "select"
   const isSelectWithText = question.type === "select-with-text"
 
@@ -224,18 +238,33 @@ export function QuestionScreen({
               }}
             >
 
-              {/* Top catch-light — thin gold spectral line */}
+              {/* Top catch-light — spectral line com pico central branco-dourado */}
               <div
                 aria-hidden
                 style={{
                   position: "absolute",
                   top: 0,
-                  left: "8%",
-                  right: "8%",
+                  left: "6%",
+                  right: "6%",
                   height: "1px",
                   background:
-                    "linear-gradient(90deg, transparent, rgba(180,148,60,0.42), transparent)",
+                    "linear-gradient(90deg, transparent 0%, rgba(180,148,60,0.28) 20%, rgba(255,248,220,0.55) 45%, rgba(255,255,255,0.42) 50%, rgba(255,248,220,0.55) 55%, rgba(180,148,60,0.28) 80%, transparent 100%)",
                   pointerEvents: "none",
+                }}
+              />
+
+              {/* Reflexo diagonal — canto superior direito */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: "35%",
+                  height: "50%",
+                  background: "radial-gradient(ellipse at 88% 0%, rgba(255,248,200,0.055) 0%, transparent 68%)",
+                  pointerEvents: "none",
+                  borderRadius: "0 12px 0 0",
                 }}
               />
 
@@ -247,9 +276,9 @@ export function QuestionScreen({
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: "72px",
+                  height: "80px",
                   background:
-                    "linear-gradient(to bottom, rgba(255,255,255,0.022), transparent)",
+                    "linear-gradient(to bottom, rgba(255,255,255,0.032), transparent)",
                   pointerEvents: "none",
                   borderRadius: "12px 12px 0 0",
                 }}
@@ -272,9 +301,14 @@ export function QuestionScreen({
                     fontWeight: 300,
                     fontStyle: "italic",
                     lineHeight: 0.9,
-                    color: "rgba(180,148,60,0.10)",
+                    background: "linear-gradient(160deg, rgba(220,186,90,0.72) 0%, rgba(180,148,60,0.48) 50%, rgba(140,110,40,0.28) 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
                     letterSpacing: "-0.02em",
                     userSelect: "none",
+                    textShadow: "none",
+                    filter: "drop-shadow(0 0 18px rgba(180,148,60,0.22))",
                   }}
                 >
                   {String(questionNumber).padStart(2, "0")}
@@ -295,10 +329,15 @@ export function QuestionScreen({
                       fontSize: "9px",
                       letterSpacing: "0.22em",
                       textTransform: "uppercase",
-                      color: TEXT_MUTED,
+                      color: "rgba(240,237,230,0.52)",
+                      fontWeight: 500,
                     }}
                   >
-                    de {totalQuestions}
+                    <span style={{
+                      color: "rgba(200,168,80,0.9)",
+                      fontWeight: 700,
+                    }}>{questionNumber}</span>
+                    {" "}de {totalQuestions}
                   </span>
                   <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
                     {Array.from({ length: Math.min(totalQuestions, 18) }).map((_, i) => {
@@ -308,15 +347,18 @@ export function QuestionScreen({
                         <motion.div
                           key={i}
                           animate={{
-                            width: current ? "16px" : "3px",
+                            width: current ? "20px" : "4px",
                             background: done
-                              ? "rgba(180,148,60,0.42)"
+                              ? "rgba(180,148,60,0.62)"
                               : current
-                              ? GOLD
-                              : "rgba(255,255,255,0.08)",
+                              ? "linear-gradient(90deg, rgba(220,186,90,1), rgba(180,148,60,0.9))"
+                              : "rgba(255,255,255,0.14)",
+                            boxShadow: current
+                              ? "0 0 8px rgba(180,148,60,0.55)"
+                              : "none",
                           }}
                           transition={{ duration: 0.32, ease: easeOut }}
-                          style={{ height: "3px", borderRadius: "2px", flexShrink: 0 }}
+                          style={{ height: "4px", borderRadius: "2px", flexShrink: 0 }}
                         />
                       )
                     })}
@@ -331,10 +373,12 @@ export function QuestionScreen({
                   fontSize: "clamp(24px, 4.2vw, 52px)",
                   fontWeight: 600,
                   lineHeight: 1.15,
-                  color: "#FDFCFA",
                   letterSpacing: "-0.025em",
                   marginBottom: "clamp(18px, 2.8vh, 36px)",
-                  textShadow: "0 1px 28px rgba(180,148,60,0.14)",
+                  background: "linear-gradient(118deg, #FEFCF8 0%, #F0EBE0 38%, #D8D0C0 75%, #C0B8A8 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
                 }}
               >
                 {question.text}
@@ -351,8 +395,9 @@ export function QuestionScreen({
                       key={question.id}
                       type="text"
                       inputMode="text"
-                      autoCapitalize={question.type === "name" ? "words" : "sentences"}
-                      autoComplete={question.type === "name" ? "name" : "off"}
+                autoCapitalize={question.type === "name" ? "words" : "none"}
+                autoComplete={question.type === "name" ? "name" : question.type === "email" ? "email" : "off"}
+                inputMode={question.type === "email" ? "email" : undefined}
                       value={value}
                       onChange={(e) => handleChange(e.target.value)}
                       onFocus={() => setTextFocused(true)}
@@ -386,14 +431,18 @@ export function QuestionScreen({
                           left: 0,
                           right: 0,
                           height: "1px",
-                          background: `linear-gradient(90deg, transparent 0%, ${GOLD} 25%, ${GOLD} 75%, transparent 100%)`,
+                          background: isValid
+                            ? "linear-gradient(90deg, transparent 0%, rgba(120,200,120,0.55) 25%, rgba(120,200,120,0.55) 75%, transparent 100%)"
+                            : `linear-gradient(90deg, transparent 0%, ${GOLD} 25%, ${GOLD} 75%, transparent 100%)`,
                           transformOrigin: "center",
                           pointerEvents: "none",
                         }}
                         animate={{
-                          scaleX: textFocused ? 1 : 0,
-                          opacity: textFocused ? 1 : 0,
-                          boxShadow: textFocused
+                          scaleX: textFocused || isValid ? 1 : 0,
+                          opacity: textFocused || isValid ? 1 : 0,
+                          boxShadow: isValid
+                            ? "0 0 8px 1px rgba(120,200,120,0.18)"
+                            : textFocused
                             ? "0 0 10px 2px rgba(180,148,60,0.32)"
                             : "none",
                         }}
@@ -689,11 +738,11 @@ function SelectOption({
         paddingBottom: "clamp(10px, 1.2vh, 15px)",
         paddingLeft: 0,
         paddingRight: 0,
-        background: isSelected ? "rgba(180,148,60,0.05)" : "transparent",
+        background: isSelected ? "rgba(180,148,60,0.08)" : "transparent",
         outline: "none",
         border: "none",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        transition: "background 0.18s",
+        borderBottom: `1px solid ${isSelected ? "rgba(180,148,60,0.18)" : "rgba(255,255,255,0.08)"}`,
+        transition: "background 0.18s, border-color 0.18s",
       } as React.CSSProperties}
       onMouseEnter={(e) => {
         if (!isSelected)
@@ -726,17 +775,18 @@ function SelectOption({
       {/* Dot */}
       <motion.div
         animate={{
-          background: isSelected ? GOLD : "transparent",
-          borderColor: isSelected ? GOLD : "rgba(255,255,255,0.2)",
-          boxShadow: isSelected ? "0 0 12px rgba(180,148,60,0.5)" : "none",
+          background: isSelected ? "linear-gradient(135deg, rgba(220,186,90,1), rgba(180,148,60,0.9))" : "transparent",
+          borderColor: isSelected ? "rgba(220,186,90,0.9)" : "rgba(255,255,255,0.28)",
+          boxShadow: isSelected ? "0 0 14px rgba(180,148,60,0.65), 0 0 6px rgba(180,148,60,0.4)" : "none",
+          scale: isSelected ? 1.2 : 1,
         }}
         transition={{ duration: 0.18 }}
         style={{
-          width: "7px",
-          height: "7px",
+          width: "8px",
+          height: "8px",
           borderRadius: "50%",
           flexShrink: 0,
-          border: "1px solid rgba(255,255,255,0.2)",
+          border: "1.5px solid rgba(255,255,255,0.28)",
         }}
       />
 
@@ -785,7 +835,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
         background: "transparent",
         border: "none",
         outline: "none",
-        color: "rgba(240,237,230,0.24)",
+        color: "rgba(240,237,230,0.48)",
         fontSize: "10px",
         letterSpacing: "0.16em",
         textTransform: "uppercase",
@@ -794,10 +844,10 @@ function BackButton({ onClick }: { onClick: () => void }) {
         transition: "color 0.2s",
       }}
       onMouseEnter={(e) => {
-        ;(e.currentTarget as HTMLButtonElement).style.color = "rgba(240,237,230,0.52)"
+        ;(e.currentTarget as HTMLButtonElement).style.color = "rgba(240,237,230,0.82)"
       }}
       onMouseLeave={(e) => {
-        ;(e.currentTarget as HTMLButtonElement).style.color = "rgba(240,237,230,0.24)"
+        ;(e.currentTarget as HTMLButtonElement).style.color = "rgba(240,237,230,0.48)"
       }}
     >
       <ArrowLeft style={{ width: "10px", height: "10px" }} />
@@ -806,7 +856,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
   )
 }
 
-/* ── ContinueButton ───────────────────────────────────────────────────────── */
+/* ── ContinueButton ──────────��─────────────────────���──────────────────────── */
 
 function ContinueButton({
   onClick,
@@ -819,8 +869,7 @@ function ContinueButton({
   label: string
   isLast: boolean
 }) {
-  const activeGold = !disabled && isLast
-  const activeBase = !disabled && !isLast
+  const isActive = !disabled
 
   return (
     <motion.button
@@ -830,50 +879,46 @@ function ContinueButton({
         disabled
           ? {}
           : {
-              y: -1.5,
-              boxShadow: activeGold
-                ? "0 0 36px rgba(180,148,60,0.32), 0 6px 22px rgba(180,148,60,0.18)"
-                : "0 0 22px rgba(180,148,60,0.16)",
+              y: -2,
+              boxShadow: isLast
+                ? "0 0 48px rgba(180,148,60,0.42), 0 8px 28px rgba(180,148,60,0.26)"
+                : "0 0 32px rgba(180,148,60,0.30), 0 6px 20px rgba(180,148,60,0.16)",
             }
       }
-      whileTap={disabled ? {} : { scale: 0.965, y: 0 }}
+      whileTap={disabled ? {} : { scale: 0.962, y: 0 }}
       className="cursor-pointer"
       style={{
         display: "flex",
         alignItems: "center",
-        gap: "9px",
-        height: "48px",
-        paddingLeft: "28px",
-        paddingRight: "28px",
-        borderRadius: "5px",
+        gap: "10px",
+        height: "50px",
+        paddingLeft: "32px",
+        paddingRight: "32px",
+        borderRadius: "6px",
         border: `1px solid ${
           disabled
-            ? "rgba(255,255,255,0.08)"
-            : activeGold
-            ? "rgba(180,148,60,0.72)"
-            : "rgba(180,148,60,0.48)"
+            ? "rgba(255,255,255,0.07)"
+            : "rgba(180,148,60,0.70)"
         }`,
-        background: activeGold
-          ? "linear-gradient(135deg, rgba(180,148,60,0.20) 0%, rgba(180,148,60,0.10) 100%)"
-          : activeBase
-          ? "rgba(180,148,60,0.08)"
-          : "transparent",
-        color: disabled ? "rgba(240,237,230,0.18)" : "rgba(200,168,80,0.96)",
+        background: disabled
+          ? "rgba(255,255,255,0.04)"
+          : isLast
+          ? "linear-gradient(135deg, rgba(210,170,65,0.95) 0%, rgba(170,138,48,0.95) 55%, rgba(145,115,35,0.90) 100%)"
+          : "linear-gradient(135deg, rgba(195,158,58,0.88) 0%, rgba(160,130,42,0.88) 55%, rgba(135,108,30,0.84) 100%)",
+        color: disabled ? "rgba(240,237,230,0.20)" : "#0B0A10",
         fontSize: "11px",
-        fontWeight: 600,
-        letterSpacing: "0.12em",
+        fontWeight: 700,
+        letterSpacing: "0.14em",
         textTransform: "uppercase",
         cursor: disabled ? "not-allowed" : "pointer",
-        transition: "border-color 0.22s, background 0.22s",
-        boxShadow: activeGold
-          ? "0 0 24px rgba(180,148,60,0.16), inset 0 1px 0 rgba(180,148,60,0.12)"
-          : activeBase
-          ? "0 0 0 rgba(180,148,60,0)"
+        transition: "border-color 0.22s, background 0.22s, box-shadow 0.22s",
+        boxShadow: isActive
+          ? "0 0 22px rgba(180,148,60,0.20), 0 4px 14px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.14)"
           : "none",
       }}
     >
       {label}
-      <ArrowRight style={{ width: "11px", height: "11px" }} />
+      <ArrowRight style={{ width: "12px", height: "12px" }} />
     </motion.button>
   )
 }
