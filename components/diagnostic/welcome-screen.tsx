@@ -155,15 +155,32 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
             </div>
           </div>
 
+          {/* Glow central — conexão visual entre colunas */}
+          <div
+            className="absolute pointer-events-none hidden lg:block"
+            style={{
+              top: "50%",
+              right: "clamp(300px, 30vw, 440px)",
+              transform: "translate(50%, -50%)",
+              width: "320px",
+              height: "320px",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(180,148,60,0.055) 0%, rgba(180,148,60,0.012) 45%, transparent 72%)",
+              zIndex: 1,
+            }}
+          />
+
           {/* Right accent panel */}
           <div
             style={{
               width: "clamp(300px, 30vw, 440px)",
               flexShrink: 0,
-              borderLeft: "1px solid rgba(255,255,255,0.07)",
-              background: "linear-gradient(180deg, rgba(180,148,60,0.018) 0%, transparent 60%)",
+              borderLeft: "1px solid rgba(180,148,60,0.12)",
+              background: "linear-gradient(160deg, rgba(180,148,60,0.04) 0%, rgba(180,148,60,0.01) 50%, transparent 100%)",
               display: "flex",
               alignItems: "center",
+              position: "relative",
+              zIndex: 2,
             }}
           >
             <RightPanel />
@@ -382,10 +399,11 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
               display: "block",
               fontSize: "clamp(44px, min(5.8vw, 7.5vh), 104px)",
               fontWeight: 400,
-              background: "linear-gradient(135deg, #EEEAE2 0%, #C4BBA8 100%)",
+              background: "linear-gradient(135deg, #F8F4EC 0%, #DDD5C0 60%, #C4BBA8 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
+              filter: "drop-shadow(0 1px 12px rgba(240,237,230,0.1))",
             }}
           >
             Antes de avançarmos,
@@ -412,10 +430,11 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
               display: "block",
               fontSize: "clamp(38px, min(4.9vw, 6.5vh), 88px)",
               fontWeight: 400,
-              background: "linear-gradient(135deg, #EEEAE2 0%, #C4BBA8 100%)",
+              background: "linear-gradient(135deg, #F8F4EC 0%, #DDD5C0 60%, #C4BBA8 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
+              filter: "drop-shadow(0 1px 12px rgba(240,237,230,0.1))",
             }}
           >
             o seu cenário.
@@ -560,12 +579,13 @@ function RightPanel() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.33 + i * 0.1, duration: 0.65, ease }}
             style={{
-              border: "1px solid rgba(180,148,60,0.16)",
+              border: "1px solid rgba(180,148,60,0.22)",
               borderRadius: "6px",
-              background: "linear-gradient(135deg, rgba(180,148,60,0.06) 0%, rgba(180,148,60,0.02) 100%)",
+              background: "linear-gradient(135deg, rgba(180,148,60,0.09) 0%, rgba(180,148,60,0.03) 100%)",
               padding: "clamp(14px, 2vh, 22px) clamp(16px, 1.8vw, 24px)",
               position: "relative",
               overflow: "hidden",
+              boxShadow: "0 1px 18px rgba(180,148,60,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
             }}
           >
             {/* Accent corner */}
@@ -599,18 +619,22 @@ function RightPanel() {
                 style={{
                   fontSize: "clamp(11px, 1vw, 13px)",
                   fontWeight: 700,
-                  color: TEXT_PRIMARY,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
+                  background: "linear-gradient(135deg, #F5EFE0 0%, #E8D99A 38%, #F0E6C4 62%, #C8B878 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  filter: "drop-shadow(0 0 8px rgba(180,148,60,0.32))",
                 }}
               >
                 {label}
               </span>
             </div>
             <p style={{
-              fontSize: "clamp(11px, 0.9vw, 13px)",
-              lineHeight: "1.6",
-              color: "rgba(240,237,230,0.48)",
+              fontSize: "clamp(11.5px, 0.95vw, 13.5px)",
+              lineHeight: "1.65",
+              color: "rgba(240,237,230,0.68)",
               paddingLeft: "12px",
             }}>
               {desc}
