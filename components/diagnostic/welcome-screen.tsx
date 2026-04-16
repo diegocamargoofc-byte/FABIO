@@ -702,7 +702,7 @@ function CtaButton({ onStart }: { onStart: () => void }) {
         }}
         whileHover={{ backgroundPosition: "200% 0", transition: { duration: 0.55, ease: "linear" } }}
       />
-      <span style={{ position: "relative", zIndex: 1 }}>Começar pré-entrevista</span>
+      <span style={{ position: "relative", zIndex: 1 }}>Começar</span>
       <motion.span
         style={{ position: "relative", zIndex: 1, display: "flex" }}
         initial={{ x: 0 }}
