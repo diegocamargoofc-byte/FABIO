@@ -9,93 +9,84 @@ interface ProgressBarProps {
   message?: string
 }
 
-export function ProgressBar({ current, total, message }: ProgressBarProps) {
+const SERIF = "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif"
+
+export function ProgressBar({ current, total }: ProgressBarProps) {
   const progress = (current / total) * 100
 
   return (
-    <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border/40 w-full max-w-full overflow-hidden">
-      <div className="px-3 sm:px-4 py-2.5 sm:py-3.5 max-w-full">
-        <div className="max-w-[calc(100%-24px)] sm:max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
+    <div
+      className="sticky top-0 z-10 backdrop-blur-md w-full max-w-full overflow-hidden"
+      style={{
+        background: "rgba(9,9,14,0.90)",
+        borderBottom: "1px solid rgba(255,255,255,0.055)",
+      }}
+    >
+      {/* Linha dourada no topo */}
+      <div
+        className="absolute inset-x-0 top-0 h-px pointer-events-none"
+        style={{ background: "linear-gradient(90deg, transparent, rgba(180,148,60,0.28), transparent)" }}
+      />
 
-          {/* Logo */}
-          <div className="flex justify-center mb-2.5">
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9445.PNG-N9T7xNmMLXKf0pEjipobXSb0q2Pwdj.png"
-              alt="IL Negócios"
-              width={110}
-              height={36}
-              className="h-8 w-auto object-contain brightness-[1.1] contrast-[1.05] opacity-90 drop-shadow-[0_1px_6px_rgba(212,165,0,0.15)]"
+      <div style={{ padding: "10px 24px 0" }}>
+        {/* Logo centralizada */}
+        <div className="flex justify-center" style={{ marginBottom: "10px" }}>
+          <Image
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9445.PNG-N9T7xNmMLXKf0pEjipobXSb0q2Pwdj.png"
+            alt="IL Negócios"
+            width={110}
+            height={36}
+            style={{
+              height: "20px",
+              width: "auto",
+              objectFit: "contain",
+              filter: "brightness(1.12) contrast(1.06) drop-shadow(0 1px 6px rgba(180,148,60,0.16))",
+              opacity: 0.88,
+            }}
+          />
+        </div>
+
+        {/* Linha de progresso */}
+        <div
+          className="relative rounded-full overflow-hidden"
+          style={{ height: "1.5px", background: "rgba(255,255,255,0.06)" }}
+        >
+          <motion.div
+            className="absolute inset-y-0 left-0 rounded-full"
+            style={{ background: "linear-gradient(90deg, #C9A84C 0%, #B4943C 100%)" }}
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+              initial={{ x: "-100%" }}
+              animate={{ x: "200%" }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 2.5, ease: "easeInOut" }}
             />
-          </div>
+          </motion.div>
+        </div>
 
-          {/* Progress message */}
+        {/* Contador de etapas */}
+        <div className="flex justify-end" style={{ marginTop: "6px", marginBottom: "8px" }}>
           <AnimatePresence mode="wait">
-            <motion.p
-              key={message}
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-              transition={{ duration: 0.3 }}
-              className="text-xs sm:text-sm text-muted-foreground mb-2 text-center"
-            >
-              {message}
-            </motion.p>
-          </AnimatePresence>
-
-          {/* Progress track */}
-          <div className="relative h-1.5 sm:h-2 bg-muted/60 rounded-full overflow-hidden">
-            {/* Background shimmer */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            
-            {/* Progress fill */}
-            <motion.div
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-primary/80 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {/* Shine effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                initial={{ x: "-100%" }}
-                animate={{ x: "200%" }}
-                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
-              />
-            </motion.div>
-
-            {/* Current position indicator */}
-            <motion.div
-              className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 bg-primary rounded-full shadow-md shadow-primary/30 border-2 border-white"
-              initial={{ left: 0 }}
-              animate={{ left: `calc(${progress}% - 5px)` }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
-
-          {/* Progress text */}
-          <div className="flex items-center justify-between mt-2 sm:mt-2.5">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <motion.span 
-                key={Math.round(progress)}
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-xs sm:text-sm font-semibold text-foreground tabular-nums"
-              >
-                {Math.round(progress)}%
-              </motion.span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">
-                concluído
-              </span>
-            </div>
-            <motion.span 
+            <motion.span
               key={current}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-[10px] sm:text-xs font-medium text-muted-foreground bg-muted/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md"
+              initial={{ opacity: 0, y: -3 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 3 }}
+              transition={{ duration: 0.25 }}
+              style={{
+                fontFamily: SERIF,
+                fontStyle: "italic",
+                fontSize: "11px",
+                color: "rgba(180,148,60,0.42)",
+                letterSpacing: "0.04em",
+              }}
             >
-              {current} de {total}
+              {String(current).padStart(2, "0")}&nbsp;/&nbsp;{String(total).padStart(2, "0")}
             </motion.span>
-          </div>
+          </AnimatePresence>
         </div>
       </div>
     </div>

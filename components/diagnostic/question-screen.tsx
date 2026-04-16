@@ -1,11 +1,8 @@
 "use client"
 
-import { useState, useCallback, useRef, useEffect } from "react"
+import { useState, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, ArrowRight, Check, AlertCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import type { Question } from "./diagnostic-flow"
 
 interface QuestionScreenProps {
@@ -28,6 +25,7 @@ function applyPhoneMask(raw: string): string {
   if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
 }
+void applyPhoneMask
 
 function validateField(type: Question["type"], value: string, extra?: string): string | null {
   const v = value.trim()
@@ -45,6 +43,47 @@ function validateField(type: Question["type"], value: string, extra?: string): s
   return null
 }
 
+// ─── tokens ──────────────────────────────────────────────────────────────────
+const GOLD      = "rgba(180,148,60,1)"
+const GOLD_DIM  = "rgba(180,148,60,0.55)"
+const TEXT_HERO = "#F0EDE6"
+const TEXT_BODY = "rgba(240,237,230,0.62)"
+const TEXT_MUTED = "rgba(240,237,230,0.22)"
+const SERIF     = "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif"
+const easeOut   = [0.22, 1, 0.36, 1] as const
+const easeIn    = [0.4, 0, 1, 1] as const
+
+// ─── Question card transition ─────────────────────────────────────────────────
+const questionVariants = {
+  initial: {
+    opacity: 0,
+    y: 24,
+    filter: "blur(8px)",
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.45, ease: easeOut },
+  },
+  exit: {
+    opacity: 0,
+    y: -18,
+    filter: "blur(6px)",
+    transition: { duration: 0.2, ease: easeIn },
+  },
+}
+
+// ─── Stagger variants for option list ────────────────────────────────────────
+const optionVariants = {
+  initial: { opacity: 0, y: 8 },
+  animate: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.04, duration: 0.32, ease: easeOut },
+  }),
+}
+
 export function QuestionScreen({
   question,
   questionNumber,
@@ -57,37 +96,29 @@ export function QuestionScreen({
   onAutoAdvance,
   canProceed,
 }: QuestionScreenProps) {
-  const [touched, setTouched] = useState(false)
+  const [touched, setTouched]           = useState(false)
   const [touchedExtra, setTouchedExtra] = useState(false)
+  const [textFocused, setTextFocused]   = useState(false)
+  const [taFocused, setTaFocused]       = useState(false)
+
   const extraInputRef = useRef<HTMLInputElement>(null)
+  const inputRef      = useRef<HTMLInputElement>(null)
+  const textareaRef   = useRef<HTMLTextAreaElement>(null)
 
   const errorMessage = touched ? validateField(question.type, value, extraValue) : null
-  const hasError = !!errorMessage
-
-  // Auto-focus the extra input when "Outro" is selected
-  useEffect(() => {
-    if (value === "Outro" && extraInputRef.current) {
-      setTimeout(() => extraInputRef.current?.focus(), 100)
-    }
-  }, [value])
+  const hasError     = !!errorMessage
 
   const handleChange = useCallback(
     (raw: string) => {
-      if (question.type === "name") {
-        onChange(raw.replace(/[0-9]/g, ""))
-      } else {
-        onChange(raw)
-      }
+      if (question.type === "name") onChange(raw.replace(/[0-9]/g, ""))
+      else onChange(raw)
     },
     [question.type, onChange]
   )
 
-  const handleExtraChange = (raw: string) => {
-    onChange(value, raw)
-  }
-
-  const handleBlur = () => setTouched(true)
-  const handleExtraBlur = () => setTouchedExtra(true)
+  const handleExtraChange = (raw: string) => onChange(value, raw)
+  const handleBlur        = () => setTouched(true)
+  const handleExtraBlur   = () => setTouchedExtra(true)
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && canProceed && question.type !== "textarea") {
@@ -105,7 +136,7 @@ export function QuestionScreen({
   const handleSelectOption = (option: string) => {
     if (option === "Outro") {
       onChange(option, extraValue)
-      // Don't auto-advance, wait for text input
+      setTimeout(() => extraInputRef.current?.focus(), 80)
     } else {
       onAutoAdvance(option)
     }
@@ -114,234 +145,469 @@ export function QuestionScreen({
   const handleSelectWithTextContinue = () => {
     setTouched(true)
     setTouchedExtra(true)
-    if (canProceed) {
-      onAutoAdvance(value, extraValue)
-    }
+    if (canProceed) onAutoAdvance(value, extraValue)
   }
 
-  const isTextType = ["text", "name", "textarea"].includes(question.type)
-  const isSelectType = question.type === "select"
+  const isTextType       = ["text", "name", "textarea"].includes(question.type)
+  const isSelectType     = question.type === "select"
   const isSelectWithText = question.type === "select-with-text"
 
-  const inputClass = `h-11 sm:h-12 text-sm sm:text-base rounded-xl transition-all duration-200 placeholder:text-muted-foreground/50
-    ${hasError
-      ? "border-2 border-red-400 bg-red-50/30 focus-visible:ring-red-300/30"
-      : "border-border/60 bg-muted/30 focus-visible:ring-primary/20"
-    }`
-
-  const optionClass = (option: string) => {
-    const isSelected = value === option
-    return `w-full p-3 sm:p-4 rounded-xl text-left text-sm sm:text-base font-medium
-      transition-all duration-200 border-2 relative overflow-hidden
-      ${isSelected
-        ? "border-primary bg-primary/[0.08] text-foreground shadow-sm"
-        : "border-border/50 bg-muted/20 text-foreground hover:border-primary/40 hover:bg-muted/40"
-      }`
+  // ─── Input underline base ──────────────────────────────────────────────────
+  const inputBase: React.CSSProperties = {
+    width: "100%",
+    background: "transparent",
+    border: "none",
+    borderBottom: `1px solid ${
+      hasError ? "rgba(239,68,68,0.38)" : textFocused ? "transparent" : "rgba(255,255,255,0.20)"
+    }`,
+    borderRadius: 0,
+    outline: "none",
+    color: "#FDFCFA",
+    fontSize: "clamp(19px, 2vw, 24px)",
+    letterSpacing: "0.01em",
+    paddingBottom: "clamp(12px, 1.4vw, 18px)",
+    paddingTop: "4px",
+    paddingLeft: 0,
+    paddingRight: 0,
+    caretColor: GOLD,
+    transition: "border-color 0.25s",
+    fontFamily: "inherit",
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center px-3 sm:px-4 py-4 overflow-hidden">
-      <div className="w-full max-w-[calc(100%-24px)] sm:max-w-xl md:max-w-2xl">
+    <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-6 overflow-y-auto">
+      {/* ── maxWidth container ── */}
+      <div className="w-full" style={{ maxWidth: "740px" }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={question.id}
-            initial={{ opacity: 0, x: 24, scale: 0.99 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -24, scale: 0.99 }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            onAnimationStart={() => { setTouched(false); setTouchedExtra(false) }}
+            variants={questionVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            onAnimationStart={() => {
+              setTouched(false)
+              setTouchedExtra(false)
+              setTextFocused(false)
+              setTaFocused(false)
+            }}
           >
-            {/* Card */}
-            <div className="bg-card rounded-2xl border border-border/60 shadow-lg p-4 sm:p-6 md:p-8 max-w-full">
 
-              {/* Step indicator */}
-              <div className="flex items-center gap-2 mb-5">
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-primary text-primary-foreground text-xs font-bold">
-                  {questionNumber}
+            {/* ════════════════════════════════════════
+                CARD — elevated dark surface
+            ════════════════════════════════════════ */}
+            <div
+              style={{
+                position: "relative",
+                // Gradient surface: top-left slightly lighter, bottom-right near-opaque
+                // creates the illusion of a physical lit panel floating above the bg
+                background:
+                  "linear-gradient(158deg, rgba(22,18,30,0.93) 0%, rgba(11,10,16,0.97) 100%)",
+                backdropFilter: "blur(32px)",
+                WebkitBackdropFilter: "blur(32px)",
+                border: "1px solid rgba(180,148,60,0.18)",
+                borderRadius: "12px",
+                padding: "clamp(28px, 5vw, 60px) clamp(24px, 5vw, 56px) clamp(24px, 4.5vw, 52px)",
+                boxShadow: [
+                  // Thin gold outline ring — separates card edge from bg
+                  "0 0 0 1px rgba(180,148,60,0.07)",
+                  // Near contact shadow — lift off surface
+                  "0 4px 18px rgba(0,0,0,0.50)",
+                  // Mid diffuse shadow
+                  "0 20px 64px rgba(0,0,0,0.62)",
+                  // Wide atmosphere shadow
+                  "0 56px 120px rgba(0,0,0,0.48)",
+                  // Ambient gold glow — halo that ties card to the WarpBg beams
+                  "0 0 120px rgba(180,148,60,0.10)",
+                ].join(", "),
+                overflow: "hidden",
+              }}
+            >
+
+              {/* Top catch-light — thin gold spectral line */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: "8%",
+                  right: "8%",
+                  height: "1px",
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(180,148,60,0.42), transparent)",
+                  pointerEvents: "none",
+                }}
+              />
+
+              {/* Interior top tint — simulates ambient light falling on card face */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "72px",
+                  background:
+                    "linear-gradient(to bottom, rgba(255,255,255,0.022), transparent)",
+                  pointerEvents: "none",
+                  borderRadius: "12px 12px 0 0",
+                }}
+              />
+
+              {/* ── Step indicator ── */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  marginBottom: "clamp(28px, 4vw, 52px)",
+                }}
+              >
+                {/* Ghost number */}
+                <span
+                  style={{
+                    fontFamily: SERIF,
+                    fontSize: "clamp(52px, 9vw, 100px)",
+                    fontWeight: 300,
+                    fontStyle: "italic",
+                    lineHeight: 0.9,
+                    color: "rgba(180,148,60,0.10)",
+                    letterSpacing: "-0.02em",
+                    userSelect: "none",
+                  }}
+                >
+                  {String(questionNumber).padStart(2, "0")}
                 </span>
-                <span className="text-xs text-muted-foreground">de {totalQuestions}</span>
-              </div>
 
-              {/* Question text */}
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-foreground tracking-tight mb-5 leading-snug">
-                {question.text}
-              </h2>
-
-              {/* --- TEXT / NAME --- */}
-              {isTextType && question.type !== "textarea" && (
-                <div className="space-y-1.5 mb-5">
-                  <Input
-                    key={question.id}
-                    type="text"
-                    inputMode={question.type === "name" ? "text" : "text"}
-                    autoCapitalize={question.type === "name" ? "words" : "sentences"}
-                    autoComplete={question.type === "name" ? "name" : "off"}
-                    value={value}
-                    onChange={(e) => handleChange(e.target.value)}
-                    onBlur={handleBlur}
-                    onKeyDown={handleKeyDown}
-                    placeholder={question.placeholder}
-                    className={inputClass}
-                    autoFocus
-                  />
-                  <AnimatePresence>
-                    {hasError && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-1.5 text-xs text-red-500"
-                      >
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                        {errorMessage}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
-
-              {/* --- TEXTAREA --- */}
-              {question.type === "textarea" && (
-                <div className="space-y-1.5 mb-5">
-                  <Textarea
-                    key={question.id}
-                    value={value}
-                    onChange={(e) => handleChange(e.target.value)}
-                    onBlur={handleBlur}
-                    placeholder={question.placeholder}
-                    className={`min-h-28 sm:min-h-36 text-sm sm:text-base rounded-xl resize-none placeholder:text-muted-foreground/50 transition-all duration-200
-                      ${hasError ? "border-2 border-red-400 bg-red-50/30" : "border-border/60 bg-muted/30"}`}
-                    autoFocus
-                  />
-                  <AnimatePresence>
-                    {hasError && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-1.5 text-xs text-red-500"
-                      >
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                        {errorMessage}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
-
-              {/* --- SELECT (auto-advance) --- */}
-              {isSelectType && question.options && (
-                <div className="grid gap-2 mb-2">
-                  {question.options.map((option, i) => {
-                    const isSelected = value === option
-                    return (
-                      <motion.button
-                        key={option}
-                        onClick={() => handleSelectOption(option)}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={optionClass(option)}
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="leading-snug">{option}</span>
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-200
-                            ${isSelected ? "bg-primary" : "border-2 border-border/60"}`}>
-                            {isSelected && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: "spring", stiffness: 500, damping: 20 }}
-                              >
-                                <Check className="w-3 h-3 text-primary-foreground" />
-                              </motion.div>
-                            )}
-                          </div>
-                        </div>
-                      </motion.button>
-                    )
-                  })}
-                </div>
-              )}
-
-              {/* --- SELECT WITH TEXT (Outro expands a field) --- */}
-              {isSelectWithText && question.options && (
-                <div className="space-y-2 mb-5">
-                  <div className="grid gap-2">
-                    {question.options.map((option, i) => {
-                      const isSelected = value === option
+                {/* Dot track */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    gap: "6px",
+                    paddingTop: "6px",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "9px",
+                      letterSpacing: "0.22em",
+                      textTransform: "uppercase",
+                      color: TEXT_MUTED,
+                    }}
+                  >
+                    de {totalQuestions}
+                  </span>
+                  <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+                    {Array.from({ length: Math.min(totalQuestions, 18) }).map((_, i) => {
+                      const done    = i < questionNumber - 1
+                      const current = i === questionNumber - 1
                       return (
-                        <motion.button
-                          key={option}
-                          onClick={() => handleSelectOption(option)}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.04 }}
-                          whileTap={{ scale: 0.98 }}
-                          className={optionClass(option)}
-                        >
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="leading-snug">{option}</span>
-                            <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-200
-                              ${isSelected ? "bg-primary" : "border-2 border-border/60"}`}>
-                              {isSelected && (
-                                <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  transition={{ type: "spring", stiffness: 500, damping: 20 }}
-                                >
-                                  <Check className="w-3 h-3 text-primary-foreground" />
-                                </motion.div>
-                              )}
-                            </div>
-                          </div>
-                        </motion.button>
+                        <motion.div
+                          key={i}
+                          animate={{
+                            width: current ? "16px" : "3px",
+                            background: done
+                              ? "rgba(180,148,60,0.42)"
+                              : current
+                              ? GOLD
+                              : "rgba(255,255,255,0.08)",
+                          }}
+                          transition={{ duration: 0.32, ease: easeOut }}
+                          style={{ height: "3px", borderRadius: "2px", flexShrink: 0 }}
+                        />
                       )
                     })}
                   </div>
+                </div>
+              </div>
 
-                  {/* "Outro" expanded input */}
+              {/* ── Question text ── */}
+              <h2
+                style={{
+                  fontFamily: SERIF,
+                  fontSize: "clamp(27px, 5.2vw, 64px)",
+                  fontWeight: 600,
+                  lineHeight: 1.15,
+                  color: "#FDFCFA",
+                  letterSpacing: "-0.025em",
+                  marginBottom: "clamp(28px, 4vw, 52px)",
+                  textShadow: "0 1px 28px rgba(180,148,60,0.14)",
+                }}
+              >
+                {question.text}
+              </h2>
+
+              {/* ─────────────────────────────────────────
+                  TEXT / NAME
+              ───────────────────────────────────────── */}
+              {isTextType && question.type !== "textarea" && (
+                <div style={{ marginBottom: "clamp(28px, 4vw, 52px)" }}>
+                  <div style={{ position: "relative" }}>
+                    <input
+                      ref={inputRef}
+                      key={question.id}
+                      type="text"
+                      inputMode="text"
+                      autoCapitalize={question.type === "name" ? "words" : "sentences"}
+                      autoComplete={question.type === "name" ? "name" : "off"}
+                      value={value}
+                      onChange={(e) => handleChange(e.target.value)}
+                      onFocus={() => setTextFocused(true)}
+                      onBlur={() => { setTextFocused(false); handleBlur() }}
+                      onKeyDown={handleKeyDown}
+                      placeholder={question.placeholder}
+                      autoFocus
+                      style={inputBase}
+                      className="placeholder:text-white/35 w-full"
+                    />
+                    {/* Static rail */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: "1px",
+                        background: hasError
+                          ? "rgba(239,68,68,0.38)"
+                          : "rgba(255,255,255,0.20)",
+                        pointerEvents: "none",
+                      }}
+                    />
+                    {/* Animated gold focus line — expands from centre */}
+                    {!hasError && (
+                      <motion.div
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          height: "1px",
+                          background: `linear-gradient(90deg, transparent 0%, ${GOLD} 25%, ${GOLD} 75%, transparent 100%)`,
+                          transformOrigin: "center",
+                          pointerEvents: "none",
+                        }}
+                        animate={{
+                          scaleX: textFocused ? 1 : 0,
+                          opacity: textFocused ? 1 : 0,
+                          boxShadow: textFocused
+                            ? "0 0 10px 2px rgba(180,148,60,0.32)"
+                            : "none",
+                        }}
+                        transition={{ duration: 0.38, ease: easeOut }}
+                      />
+                    )}
+                  </div>
+
+                  <AnimatePresence>
+                    {hasError && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          fontSize: "11px",
+                          color: "rgba(239,100,100,0.55)",
+                          marginTop: "10px",
+                          letterSpacing: "0.02em",
+                        }}
+                      >
+                        <AlertCircle style={{ width: "12px", height: "12px", flexShrink: 0 }} />
+                        {errorMessage}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* ─────────────────────────────────────────
+                  TEXTAREA
+              ───────────────────────────────────────── */}
+              {question.type === "textarea" && (
+                <div style={{ marginBottom: "clamp(28px, 4vw, 52px)" }}>
+                  <textarea
+                    ref={textareaRef}
+                    key={question.id}
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
+                    onFocus={() => setTaFocused(true)}
+                    onBlur={() => { setTaFocused(false); handleBlur() }}
+                    placeholder={question.placeholder}
+                    autoFocus
+                    rows={5}
+                    style={{
+                      width: "100%",
+                      background: taFocused
+                        ? "rgba(180,148,60,0.028)"
+                        : "rgba(255,255,255,0.022)",
+                      border: `1px solid ${
+                        hasError
+                          ? "rgba(239,68,68,0.5)"
+                          : taFocused
+                          ? "rgba(180,148,60,0.32)"
+                          : "rgba(255,255,255,0.10)"
+                      }`,
+                      borderRadius: "6px",
+                      outline: "none",
+                      color: "#FDFCFA",
+                      fontSize: "clamp(16px, 1.5vw, 19px)",
+                      letterSpacing: "0.01em",
+                      lineHeight: "1.75",
+                      padding: "clamp(14px, 1.6vw, 20px) clamp(16px, 1.8vw, 22px)",
+                      resize: "none",
+                      caretColor: GOLD,
+                      transition: "border-color 0.28s, background 0.28s, box-shadow 0.28s",
+                      fontFamily: "inherit",
+                      boxShadow: taFocused && !hasError
+                        ? "0 0 0 3px rgba(180,148,60,0.08), 0 0 16px rgba(180,148,60,0.06)"
+                        : "none",
+                    }}
+                    className="placeholder:text-white/35"
+                  />
+                  <AnimatePresence>
+                    {hasError && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          fontSize: "11px",
+                          color: "rgba(239,100,100,0.55)",
+                          marginTop: "10px",
+                          letterSpacing: "0.02em",
+                        }}
+                      >
+                        <AlertCircle style={{ width: "12px", height: "12px", flexShrink: 0 }} />
+                        {errorMessage}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* ─────────────────────────────────────────
+                  SELECT (auto-advance)
+              ───────────────────────────────────────── */}
+              {isSelectType && question.options && (
+                <div style={{ marginBottom: "16px" }}>
+                  {question.options.map((option, i) => (
+                    <SelectOption
+                      key={option}
+                      option={option}
+                      index={i}
+                      isSelected={value === option}
+                      onClick={() => handleSelectOption(option)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* ─────────────────────────────────────────
+                  SELECT WITH TEXT
+              ───────────────────────────────────────── */}
+              {isSelectWithText && question.options && (
+                <div style={{ marginBottom: "24px" }}>
+                  {question.options.map((option, i) => (
+                    <SelectOption
+                      key={option}
+                      option={option}
+                      index={i}
+                      isSelected={value === option}
+                      onClick={() => handleSelectOption(option)}
+                    />
+                  ))}
+
+                  {/* "Outro" expand */}
                   <AnimatePresence>
                     {value === "Outro" && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="overflow-hidden"
+                        transition={{ duration: 0.28, ease: easeOut }}
+                        style={{ overflow: "hidden" }}
                       >
-                        <div className="pt-1 space-y-1.5">
-                          <Input
-                            ref={extraInputRef}
-                            type="text"
-                            value={extraValue}
-                            onChange={(e) => handleExtraChange(e.target.value)}
-                            onBlur={handleExtraBlur}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" && canProceed) handleSelectWithTextContinue()
-                            }}
-                            placeholder="Descreva brevemente..."
-                            className={`h-11 text-sm rounded-xl transition-all duration-200 placeholder:text-muted-foreground/50
-                              ${touchedExtra && (!extraValue || extraValue.trim().length < 2)
-                                ? "border-2 border-red-400 bg-red-50/30"
-                                : "border-border/60 bg-muted/30"
-                              }`}
-                          />
-                          {touchedExtra && (!extraValue || extraValue.trim().length < 2) && (
-                            <p className="flex items-center gap-1.5 text-xs text-red-500">
-                              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                              Por favor, descreva sua resposta
-                            </p>
-                          )}
-                          <Button
+                        <div
+                          style={{
+                            paddingTop: "22px",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "14px",
+                          }}
+                        >
+                          <div style={{ position: "relative" }}>
+                            <input
+                              ref={extraInputRef}
+                              type="text"
+                              value={extraValue}
+                              onChange={(e) => handleExtraChange(e.target.value)}
+                              onBlur={handleExtraBlur}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && canProceed)
+                                  handleSelectWithTextContinue()
+                              }}
+                              placeholder="Descreva brevemente..."
+                              style={{
+                                width: "100%",
+                                background: "transparent",
+                                border: "none",
+                                borderBottom: `1px solid ${
+                                  touchedExtra &&
+                                  (!extraValue || extraValue.trim().length < 2)
+                                    ? "rgba(239,68,68,0.55)"
+                                    : "rgba(255,255,255,0.13)"
+                                }`,
+                                borderRadius: 0,
+                                outline: "none",
+                                color: TEXT_HERO,
+                                fontSize: "16px",
+                                letterSpacing: "0.02em",
+                                paddingBottom: "11px",
+                                paddingTop: "4px",
+                                paddingLeft: 0,
+                                paddingRight: 0,
+                                caretColor: GOLD,
+                                transition: "border-color 0.25s",
+                                fontFamily: "inherit",
+                              }}
+                              className="placeholder:text-white/20 w-full"
+                            />
+                          </div>
+                          {touchedExtra &&
+                            (!extraValue || extraValue.trim().length < 2) && (
+                              <p
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "6px",
+                                  fontSize: "11px",
+                                  color: "rgba(239,100,100,0.55)",
+                                  letterSpacing: "0.02em",
+                                }}
+                              >
+                                <AlertCircle
+                                  style={{ width: "13px", height: "13px", flexShrink: 0 }}
+                                />
+                                Por favor, descreva sua resposta
+                              </p>
+                            )}
+                          <ContinueButton
                             onClick={handleSelectWithTextContinue}
                             disabled={!canProceed}
-                            className="w-full h-10 rounded-xl text-sm font-medium gap-2 group disabled:opacity-40"
-                          >
-                            Continuar
-                            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-                          </Button>
+                            label="Continuar"
+                            isLast={false}
+                          />
                         </div>
                       </motion.div>
                     )}
@@ -349,45 +615,265 @@ export function QuestionScreen({
                 </div>
               )}
 
-              {/* Navigation for text/textarea */}
+              {/* ── Navigation — text / textarea ── */}
               {isTextType && (
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={onBack}
-                    className="h-11 px-4 rounded-xl border-border/60 text-sm"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-1.5" />
-                    Voltar
-                  </Button>
-                  <Button
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingTop: "clamp(8px, 2vw, 24px)",
+                  }}
+                >
+                  <BackButton onClick={onBack} />
+                  <ContinueButton
                     onClick={handleNext}
                     disabled={!canProceed}
-                    className="flex-1 h-11 rounded-xl gap-2 group disabled:opacity-40 text-sm font-medium"
-                  >
-                    {questionNumber === totalQuestions ? "Finalizar" : "Continuar"}
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                  </Button>
+                    label={questionNumber === totalQuestions ? "Finalizar" : "Continuar"}
+                    isLast={questionNumber === totalQuestions}
+                  />
                 </div>
               )}
 
-              {/* Back button only for select types */}
+              {/* ── Back — select screens ── */}
               {(isSelectType || isSelectWithText) && (
-                <div className="flex justify-start mt-3">
-                  <Button
-                    variant="ghost"
-                    onClick={onBack}
-                    className="h-9 px-3 rounded-lg text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5 mr-1" />
-                    Voltar
-                  </Button>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    paddingTop: "clamp(16px, 2vw, 28px)",
+                  }}
+                >
+                  <BackButton onClick={onBack} />
                 </div>
               )}
+
             </div>
+            {/* /CARD */}
+
           </motion.div>
         </AnimatePresence>
       </div>
     </div>
+  )
+}
+
+/* ── SelectOption ─────────────────────────────────────────────────────────── */
+
+function SelectOption({
+  option,
+  index,
+  isSelected,
+  onClick,
+}: {
+  option: string
+  index: number
+  isSelected: boolean
+  onClick: () => void
+}) {
+  return (
+    <motion.button
+      onClick={onClick}
+      variants={optionVariants}
+      initial="initial"
+      animate="animate"
+      custom={index}
+      whileTap={{ scale: 0.995 }}
+      className="w-full text-left cursor-pointer"
+      style={{
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        gap: "clamp(14px, 1.5vw, 20px)",
+        paddingTop: "clamp(13px, 1.4vw, 18px)",
+        paddingBottom: "clamp(13px, 1.4vw, 18px)",
+        paddingLeft: 0,
+        paddingRight: 0,
+        background: isSelected ? "rgba(180,148,60,0.05)" : "transparent",
+        outline: "none",
+        border: "none",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        transition: "background 0.18s",
+      } as React.CSSProperties}
+      onMouseEnter={(e) => {
+        if (!isSelected)
+          e.currentTarget.style.background = "rgba(255,255,255,0.024)"
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = isSelected
+          ? "rgba(180,148,60,0.05)"
+          : "transparent"
+      }}
+    >
+      {/* Left accent bar */}
+      <motion.span
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: 0,
+          top: "18%",
+          bottom: "18%",
+          width: "1.5px",
+          background: GOLD,
+          borderRadius: "1px",
+          transformOrigin: "center",
+          pointerEvents: "none",
+        }}
+        animate={{ scaleY: isSelected ? 1 : 0, opacity: isSelected ? 0.7 : 0 }}
+        transition={{ duration: 0.2, ease: easeOut }}
+      />
+
+      {/* Dot */}
+      <motion.div
+        animate={{
+          background: isSelected ? GOLD : "transparent",
+          borderColor: isSelected ? GOLD : "rgba(255,255,255,0.2)",
+          boxShadow: isSelected ? "0 0 12px rgba(180,148,60,0.5)" : "none",
+        }}
+        transition={{ duration: 0.18 }}
+        style={{
+          width: "7px",
+          height: "7px",
+          borderRadius: "50%",
+          flexShrink: 0,
+          border: "1px solid rgba(255,255,255,0.2)",
+        }}
+      />
+
+      {/* Label */}
+      <span
+        style={{
+          flex: 1,
+          fontSize: "clamp(16px, 1.4vw, 19px)",
+          fontWeight: isSelected ? 500 : 400,
+          color: isSelected ? "#FDFCFA" : TEXT_BODY,
+          transition: "color 0.18s",
+          letterSpacing: "0.005em",
+        }}
+      >
+        {option}
+      </span>
+
+      {/* Check */}
+      <AnimatePresence>
+        {isSelected && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 22 }}
+          >
+            <Check style={{ width: "12px", height: "12px", color: GOLD_DIM }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  )
+}
+
+/* ── BackButton ───────────────────────────────────────────────────────────── */
+
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="cursor-pointer"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "7px",
+        background: "transparent",
+        border: "none",
+        outline: "none",
+        color: "rgba(240,237,230,0.24)",
+        fontSize: "10px",
+        letterSpacing: "0.16em",
+        textTransform: "uppercase",
+        padding: "8px 0",
+        cursor: "pointer",
+        transition: "color 0.2s",
+      }}
+      onMouseEnter={(e) => {
+        ;(e.currentTarget as HTMLButtonElement).style.color = "rgba(240,237,230,0.52)"
+      }}
+      onMouseLeave={(e) => {
+        ;(e.currentTarget as HTMLButtonElement).style.color = "rgba(240,237,230,0.24)"
+      }}
+    >
+      <ArrowLeft style={{ width: "10px", height: "10px" }} />
+      Voltar
+    </button>
+  )
+}
+
+/* ── ContinueButton ───────────────────────────────────────────────────────── */
+
+function ContinueButton({
+  onClick,
+  disabled,
+  label,
+  isLast,
+}: {
+  onClick: () => void
+  disabled: boolean
+  label: string
+  isLast: boolean
+}) {
+  const activeGold = !disabled && isLast
+  const activeBase = !disabled && !isLast
+
+  return (
+    <motion.button
+      onClick={onClick}
+      disabled={disabled}
+      whileHover={
+        disabled
+          ? {}
+          : {
+              y: -1.5,
+              boxShadow: activeGold
+                ? "0 0 36px rgba(180,148,60,0.32), 0 6px 22px rgba(180,148,60,0.18)"
+                : "0 0 22px rgba(180,148,60,0.16)",
+            }
+      }
+      whileTap={disabled ? {} : { scale: 0.965, y: 0 }}
+      className="cursor-pointer"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "9px",
+        height: "48px",
+        paddingLeft: "28px",
+        paddingRight: "28px",
+        borderRadius: "5px",
+        border: `1px solid ${
+          disabled
+            ? "rgba(255,255,255,0.08)"
+            : activeGold
+            ? "rgba(180,148,60,0.72)"
+            : "rgba(180,148,60,0.48)"
+        }`,
+        background: activeGold
+          ? "linear-gradient(135deg, rgba(180,148,60,0.20) 0%, rgba(180,148,60,0.10) 100%)"
+          : activeBase
+          ? "rgba(180,148,60,0.08)"
+          : "transparent",
+        color: disabled ? "rgba(240,237,230,0.18)" : "rgba(200,168,80,0.96)",
+        fontSize: "11px",
+        fontWeight: 600,
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        cursor: disabled ? "not-allowed" : "pointer",
+        transition: "border-color 0.22s, background 0.22s",
+        boxShadow: activeGold
+          ? "0 0 24px rgba(180,148,60,0.16), inset 0 1px 0 rgba(180,148,60,0.12)"
+          : activeBase
+          ? "0 0 0 rgba(180,148,60,0)"
+          : "none",
+      }}
+    >
+      {label}
+      <ArrowRight style={{ width: "11px", height: "11px" }} />
+    </motion.button>
   )
 }

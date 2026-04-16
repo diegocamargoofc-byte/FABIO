@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(npx tsc *)",
+      "Bash(where uipro *)",
+      "Bash(npx uipro *)",
+      "Bash(npm i *)",
+      "Bash(npx next *)"
+    ]
+  }
+}

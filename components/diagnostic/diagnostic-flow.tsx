@@ -6,12 +6,17 @@ import { QuestionScreen } from "./question-screen"
 import { AnalysisScreen } from "./analysis-screen"
 import { CompletionScreen } from "./completion-screen"
 import { ProgressBar } from "./progress-bar"
+import { LogoIntro } from "./logo-intro"
+import { WarpBackground } from "@/components/ui/warp-background"
+import type { DiagnosticResult } from "@/app/api/analyze/route"
 
 export interface Answer {
   questionId: number
   value: string
   extraValue?: string // for "Outro" open text
 }
+
+export type { DiagnosticResult }
 
 export interface Question {
   id: number
@@ -150,9 +155,11 @@ function getProgressMessage(progress: number): string {
 }
 
 export function DiagnosticFlow() {
+  const [showIntro, setShowIntro] = useState(true)
   const [currentScreen, setCurrentScreen] = useState<"welcome" | "questions" | "analysis" | "completion">("welcome")
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [answers, setAnswers] = useState<Answer[]>([])
+  const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(null)
 
   const getVisibleQuestions = useCallback(() => {
     return questions.filter((q) => {
@@ -199,7 +206,10 @@ export function DiagnosticFlow() {
     }
   }
 
-  const handleAnalysisComplete = () => setCurrentScreen("completion")
+  const handleAnalysisComplete = (result: DiagnosticResult | null) => {
+    setDiagnosticResult(result)
+    setCurrentScreen("completion")
+  }
 
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
@@ -276,21 +286,85 @@ Quero avançar para a Sessão Estratégica.`
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank")
   }
 
+  // ─── Intro de logo — mostra uma única vez, antes da hero
+  if (showIntro) {
+    return <LogoIntro onComplete={() => setShowIntro(false)} />
+  }
+
   if (currentScreen === "welcome") {
     return <WelcomeScreen onStart={handleStart} />
   }
 
   if (currentScreen === "analysis") {
-    return <AnalysisScreen onComplete={handleAnalysisComplete} />
+    return (
+      <AnalysisScreen
+        answers={answers}
+        questions={visibleQuestions}
+        onComplete={handleAnalysisComplete}
+      />
+    )
   }
 
   if (currentScreen === "completion") {
-    return <CompletionScreen onSendWhatsApp={handleSendWhatsApp} answers={answers} questions={visibleQuestions} />
+    return (
+      <CompletionScreen
+        onSendWhatsApp={handleSendWhatsApp}
+        answers={answers}
+        questions={visibleQuestions}
+        diagnosticResult={diagnosticResult}
+      />
+    )
   }
 
   return (
-    <div className="h-dvh w-full max-w-full flex flex-col bg-background relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/30 pointer-events-none" />
+    <div className="h-dvh w-full max-w-full flex flex-col relative overflow-hidden" style={{ background: "#09090E" }}>
+
+      {/* ── Layer 1: Warp 3-D grid — very subtle amber beams ── */}
+      <WarpBackground
+        className="absolute inset-0"
+        beamsPerSide={1}
+        beamSize={9}
+        beamDuration={14}
+        beamDelayMax={10}
+        beamDelayMin={2}
+        beamOpacity={0.30}
+        gridColor="rgba(180,148,60,0.025)"
+        perspective={150}
+      />
+
+      {/* ── Layer 2: Flat dark mute — tones down everything uniformly ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "rgba(9,9,14,0.28)" }}
+      />
+
+      {/* ── Layer 3: Central warm hint — very soft, not dominant ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 40% at 50% 40%, rgba(180,148,60,0.035) 0%, transparent 65%)",
+        }}
+      />
+
+      {/* ── Layer 4: Edge vignette — heavy crush on edges ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 25%, rgba(9,9,14,0.90) 100%)",
+        }}
+      />
+
+      {/* ── Layer 5: Bottom fade ── */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+        style={{
+          background: "linear-gradient(to top, rgba(9,9,14,0.70), transparent)",
+        }}
+      />
+
+      {/* ── Content ── */}
       <div className="relative z-10 flex flex-col flex-1 overflow-hidden">
         <ProgressBar
           current={currentQuestionIndex + 1}

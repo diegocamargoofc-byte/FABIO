@@ -1,117 +1,140 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight, TrendingUp, Target, Users } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import Image from "next/image"
 
 interface WelcomeScreenProps {
   onStart: () => void
 }
 
-const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay },
-})
-
-const LOGO_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9445.PNG-N9T7xNmMLXKf0pEjipobXSb0q2Pwdj.png"
-const GOLD = "rgba(180,148,60,1)"
-const GOLD_DIM = "rgba(180,148,60,0.75)"
-const GOLD_MUTED = "rgba(180,148,60,0.4)"
-const GOLD_FAINT = "rgba(180,148,60,0.5)"
+const LOGO_SRC     = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9445.PNG-N9T7xNmMLXKf0pEjipobXSb0q2Pwdj.png"
+const GOLD         = "rgba(180,148,60,1)"
+const GOLD_DIM     = "rgba(180,148,60,0.72)"
+const GOLD_MUTED   = "rgba(180,148,60,0.28)"
 const TEXT_PRIMARY = "#F0EDE6"
-const TEXT_BODY = "rgba(240,237,230,0.62)"
-const TEXT_FAINT = "rgba(240,237,230,0.32)"
-const TEXT_GHOST = "rgba(240,237,230,0.2)"
-const BG = "#09090E"
+const TEXT_BODY    = "rgba(240,237,230,0.56)"
+const TEXT_GHOST   = "rgba(240,237,230,0.14)"
+const BG           = "#09090E"
+const SERIF        = "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif"
+
+const ease = [0.22, 1, 0.36, 1] as const
+
+const fadeUp = (delay = 0, distance = 18) => ({
+  initial: { opacity: 0, y: distance },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.85, ease, delay },
+})
 
 export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
   return (
     <div
-      className="w-full max-w-full overflow-x-hidden flex flex-col"
-      style={{
-        minHeight: "100vh",
-        height: "100vh",
-        background: BG,
-        boxSizing: "border-box",
-      }}
+      className="w-full max-w-full overflow-hidden flex flex-col"
+      style={{ height: "100dvh", background: BG, boxSizing: "border-box" }}
     >
-      {/* Subtle grid */}
+      {/* ── Layers de fundo ── */}
+
+      {/* Noise grain */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)`,
-          backgroundSize: "72px 72px",
+          opacity: 0.022,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "210px 210px",
         }}
       />
-      {/* Top glow */}
+
+      {/* Radial glow — topo esquerdo */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
+        className="absolute pointer-events-none"
         style={{
-          width: "500px",
-          height: "120px",
+          top: "-8%", left: "-4%",
+          width: "60vw", height: "60vw",
+          maxWidth: "760px", maxHeight: "760px",
           borderRadius: "50%",
-          filter: "blur(80px)",
-          background: "rgba(180,148,60,0.05)",
+          background: "radial-gradient(circle, rgba(180,148,60,0.048) 0%, transparent 65%)",
         }}
+      />
+
+      {/* Radial glow — inferior direito */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          bottom: "-12%", right: "-4%",
+          width: "44vw", height: "44vw",
+          maxWidth: "560px", maxHeight: "560px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(180,148,60,0.026) 0%, transparent 65%)",
+        }}
+      />
+
+      {/* Linha dourada superior */}
+      <div
+        className="absolute inset-x-0 top-0 h-px pointer-events-none"
+        style={{ background: "linear-gradient(90deg, transparent 5%, rgba(180,148,60,0.38) 38%, rgba(180,148,60,0.38) 62%, transparent 95%)" }}
       />
 
       {/* ── HEADER ── */}
       <header
         className="relative z-10 shrink-0 w-full flex items-center"
         style={{
-          height: "56px",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
-          paddingLeft: "clamp(16px, 5vw, 40px)",
-          paddingRight: "clamp(16px, 5vw, 40px)",
-          justifyContent: "flex-start",
+          height: "64px",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          paddingLeft: "clamp(20px, 5vw, 60px)",
+          paddingRight: "clamp(20px, 5vw, 60px)",
         }}
       >
-        {/* Mobile: centered; Desktop: left */}
-        <div className="lg:hidden absolute left-0 right-0 flex justify-center pointer-events-none">
+        {/* Mobile — logo centralizada */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.9, delay: 0.04 }}
+          className="lg:hidden absolute left-0 right-0 flex justify-center pointer-events-none"
+        >
           <Image
             src={LOGO_SRC}
             alt="IL Negócios — Performance & Resultado"
-            width={130}
-            height={42}
-            priority
+            width={130} height={42} priority
             className="object-contain"
             style={{
-              height: "28px",
-              width: "auto",
-              filter: "brightness(1.15) contrast(1.06) drop-shadow(0 1px 6px rgba(180,148,60,0.18))",
+              height: "24px", width: "auto",
+              filter: "brightness(1.18) contrast(1.06) drop-shadow(0 1px 10px rgba(180,148,60,0.22))",
             }}
           />
-        </div>
-        <div className="hidden lg:flex">
+        </motion.div>
+
+        {/* Desktop — logo à esquerda */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.9, delay: 0.04 }}
+          className="hidden lg:flex"
+        >
           <Image
             src={LOGO_SRC}
             alt="IL Negócios — Performance & Resultado"
-            width={144}
-            height={46}
-            priority
+            width={144} height={46} priority
             className="object-contain"
             style={{
-              height: "34px",
-              width: "auto",
-              filter: "brightness(1.15) contrast(1.06) drop-shadow(0 1px 6px rgba(180,148,60,0.18))",
+              height: "28px", width: "auto",
+              filter: "brightness(1.18) contrast(1.06) drop-shadow(0 1px 10px rgba(180,148,60,0.22))",
             }}
           />
-        </div>
+        </motion.div>
       </header>
 
       {/* ── MAIN ── */}
       <main
-        className="relative z-10 flex-1 overflow-hidden flex items-center justify-center"
+        className="relative z-10 flex-1 flex items-center justify-center overflow-hidden"
         style={{ boxSizing: "border-box" }}
       >
-        {/* Mobile / Tablet */}
+        {/* ─ Mobile ─ */}
         <div
-          className="lg:hidden w-full flex flex-col items-center text-center overflow-hidden"
+          className="lg:hidden w-full flex flex-col items-center"
           style={{
-            padding: "20px 20px 24px",
-            maxWidth: "400px",
+            padding: "clamp(20px, 3vh, 40px) 28px",
+            maxWidth: "460px",
             marginInline: "auto",
             boxSizing: "border-box",
           }}
@@ -119,167 +142,310 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           <MobileContent onStart={onStart} />
         </div>
 
-        {/* Desktop — duas colunas */}
-        <div
-          className="hidden lg:grid w-full h-full"
-          style={{
-            maxWidth: "1200px",
-            marginInline: "auto",
-            padding: "0 clamp(32px, 4vw, 56px)",
-            gridTemplateColumns: "1.15fr 0.85fr",
-            alignItems: "center",
-            boxSizing: "border-box",
-          }}
-        >
-          <div style={{ maxWidth: "560px", paddingRight: "48px" }}>
-            <DesktopContent onStart={onStart} />
+        {/* ─ Desktop ─ */}
+        <div className="hidden lg:flex w-full h-full items-stretch">
+
+          {/* Left column */}
+          <div
+            className="flex-1 min-w-0 flex items-center"
+            style={{ padding: "0 clamp(64px, 7vw, 130px)" }}
+          >
+            <div style={{ width: "100%", maxWidth: "960px" }}>
+              <DesktopContent onStart={onStart} />
+            </div>
           </div>
+
+          {/* Right accent panel */}
           <div
             style={{
-              borderLeft: "1px solid rgba(255,255,255,0.07)",
-              height: "100%",
+              width: "clamp(240px, 24vw, 360px)",
+              flexShrink: 0,
+              borderLeft: "1px solid rgba(255,255,255,0.05)",
               display: "flex",
               alignItems: "center",
             }}
           >
             <RightPanel />
           </div>
+
         </div>
       </main>
     </div>
   )
 }
 
-/* ─────────────────────────────────────────────────
-   Conteúdo mobile — tudo centralizado
-───────────────────────────────────────────────── */
+/* ── MOBILE ─────────────────────────────────────────────────── */
 function MobileContent({ onStart }: { onStart: () => void }) {
   return (
     <>
+      {/* Eyebrow */}
       <motion.p
-        {...fadeUp(0.05)}
-        className="text-[10px] font-semibold tracking-[0.18em] uppercase mb-4 w-full"
-        style={{ color: GOLD_DIM }}
+        {...fadeUp(0.07)}
+        style={{
+          fontSize: "9px",
+          fontWeight: 500,
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          color: GOLD_DIM,
+          marginBottom: "clamp(12px, 2.5vh, 28px)",
+          width: "100%",
+          textAlign: "center",
+        }}
       >
         Sessão Estratégica&nbsp;·&nbsp;IL Negócios
       </motion.p>
 
-      <motion.h1
-        {...fadeUp(0.1)}
-        className="text-[28px] font-bold leading-[1.08] tracking-[-0.01em] mb-5 w-full"
-        style={{ color: TEXT_PRIMARY, textWrap: "balance" } as React.CSSProperties}
+      {/* Headline */}
+      <motion.div
+        style={{ width: "100%", marginBottom: "clamp(14px, 3vh, 32px)", textAlign: "center" }}
+        initial={{ opacity: 0, y: 22 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, ease, delay: 0.12 }}
       >
-        Antes de avançarmos,<br />
-        <span style={{ color: GOLD }}>preciso entender</span><br />
-        o seu cenário.
-      </motion.h1>
+        <h1
+          style={{
+            fontFamily: SERIF,
+            lineHeight: 1.06,
+            letterSpacing: "-0.02em",
+          } as React.CSSProperties}
+        >
+          <span
+            style={{
+              display: "block",
+              fontSize: "clamp(28px, min(7.5vw, 5.5vh), 42px)",
+              fontWeight: 400,
+              background: "linear-gradient(135deg, #E8E2D8 0%, #C8C0B0 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            Antes de avançarmos,
+          </span>
+          <span
+            style={{
+              display: "block",
+              fontSize: "clamp(32px, min(9vw, 6.8vh), 50px)",
+              fontWeight: 600,
+              fontStyle: "italic",
+              background: "linear-gradient(135deg, #D4AC50 0%, #F0CE70 48%, #C9963C 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              filter: "drop-shadow(0 0 22px rgba(180,148,60,0.28))",
+            }}
+          >
+            preciso entender
+          </span>
+          <span
+            style={{
+              display: "block",
+              fontSize: "clamp(24px, min(6.5vw, 4.8vh), 38px)",
+              fontWeight: 400,
+              background: "linear-gradient(135deg, #E8E2D8 0%, #C8C0B0 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            o seu cenário.
+          </span>
+        </h1>
+      </motion.div>
 
+      {/* Divisor editorial */}
       <motion.div
-        {...fadeUp(0.13)}
-        className="w-8 h-px mb-5"
-        style={{ background: GOLD_MUTED }}
-      />
+        {...fadeUp(0.2)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          marginBottom: "clamp(10px, 2vh, 24px)",
+          maxWidth: "280px",
+          marginInline: "auto",
+          width: "100%",
+        }}
+      >
+        <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, transparent, rgba(180,148,60,0.2), transparent)" }} />
+        <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: GOLD_MUTED }} />
+        <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, transparent, rgba(180,148,60,0.2), transparent)" }} />
+      </motion.div>
 
+      {/* Body */}
       <motion.div
-        {...fadeUp(0.15)}
-        className="flex flex-col gap-3 text-[14px] leading-[1.6] mb-4 w-full"
-        style={{ color: TEXT_BODY, maxWidth: "360px", marginInline: "auto" }}
+        {...fadeUp(0.24)}
+        style={{
+          color: TEXT_BODY,
+          fontSize: "13.5px",
+          lineHeight: "1.72",
+          maxWidth: "390px",
+          marginInline: "auto",
+          width: "100%",
+          textAlign: "left",
+          display: "flex",
+          flexDirection: "column",
+          gap: "clamp(8px, 1.5vh, 14px)",
+          marginBottom: "clamp(10px, 2vh, 22px)",
+          letterSpacing: "0.01em",
+        }}
       >
         <p>
           A <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>Sessão Estratégica</strong> é um encontro exclusivo para empresários que querem crescer, vender mais e organizar o negócio com método.
         </p>
         <p>
-          Vou analisar seu momento atual e mostrar com clareza os{" "}
+          Vou analisar seu momento atual e mostrar os{" "}
           <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>erros e oportunidades</strong>{" "}
-          que podem estar limitando o seu{" "}
-          <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>faturamento</strong>.
-        </p>
-        <p>
-          Antes de avançar, você responderá uma{" "}
-          <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>pré-entrevista rápida</strong>{" "}
-          sobre o seu negócio.
+          que limitam o seu <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>faturamento</strong>.
         </p>
       </motion.div>
 
+      {/* Quote */}
       <motion.p
-        {...fadeUp(0.19)}
-        className="text-[13px] leading-[1.6] mb-5 pl-3 border-l text-left w-full"
+        {...fadeUp(0.27)}
         style={{
-          color: "rgba(180,148,60,0.88)",
-          borderColor: GOLD_MUTED,
+          fontFamily: SERIF,
           fontStyle: "italic",
-          maxWidth: "360px",
+          fontSize: "15px",
+          lineHeight: "1.62",
+          color: "rgba(180,148,60,0.78)",
+          borderLeft: `2px solid ${GOLD_MUTED}`,
+          paddingLeft: "14px",
+          maxWidth: "380px",
           marginInline: "auto",
+          width: "100%",
+          textAlign: "left",
+          marginBottom: "clamp(14px, 2.8vh, 32px)",
         }}
       >
-        Isso garante que a sessão seja <strong style={{ fontWeight: 600 }}>direta, personalizada</strong> e focada em resultado.
+        Isso garante que a sessão seja{" "}
+        <strong style={{ fontWeight: 600 }}>direta, personalizada</strong>{" "}
+        e focada em resultado.
       </motion.p>
 
-      <motion.p
-        {...fadeUp(0.22)}
-        className="text-[12px] mb-6 w-full"
-        style={{ color: TEXT_FAINT, maxWidth: "340px", marginInline: "auto" }}
-      >
-        No final, você saberá se faz sentido avançarmos para a sua Sessão Estratégica.
-      </motion.p>
-
+      {/* CTA */}
       <motion.div
-        {...fadeUp(0.26)}
-        className="w-full"
-        style={{ maxWidth: "320px", marginInline: "auto" }}
+        {...fadeUp(0.31)}
+        style={{ width: "100%", maxWidth: "360px", marginInline: "auto", marginBottom: "clamp(6px, 1.2vh, 12px)" }}
       >
         <CtaButton onStart={onStart} />
       </motion.div>
 
-      <motion.p
-        {...fadeUp(0.3)}
-        className="text-[10px] tracking-[0.07em] mt-3"
-        style={{ color: TEXT_GHOST }}
-      >
+      <motion.p {...fadeUp(0.35)} style={{ fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: TEXT_GHOST }}>
         Leva menos de 3 minutos&nbsp;&nbsp;·&nbsp;&nbsp;Vagas limitadas
       </motion.p>
     </>
   )
 }
 
-/* ─────────────────────────────────────────────────
-   Conteúdo desktop — coluna esquerda
-───────────────────────────────────────────────── */
+/* ── DESKTOP ──────────────────────────────────────────────────── */
 function DesktopContent({ onStart }: { onStart: () => void }) {
   return (
     <>
+      {/* Eyebrow */}
       <motion.p
-        {...fadeUp(0.05)}
-        className="text-[11px] font-semibold tracking-[0.2em] uppercase mb-5"
-        style={{ color: GOLD_DIM }}
+        {...fadeUp(0.07)}
+        style={{
+          fontSize: "10px",
+          fontWeight: 500,
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          color: GOLD_DIM,
+          marginBottom: "clamp(20px, min(4vw, 4vh), 48px)",
+        }}
       >
         Sessão Estratégica&nbsp;·&nbsp;IL Negócios
       </motion.p>
 
-      <motion.h1
-        {...fadeUp(0.1)}
-        className="font-bold leading-[1.05] tracking-[-0.015em] mb-6"
-        style={{
-          color: TEXT_PRIMARY,
-          fontSize: "clamp(32px, 2.8vw, 44px)",
-          textWrap: "balance",
-        } as React.CSSProperties}
+      {/* Headline — clamp usa min(vw, vh) para nunca vazar em telas baixas */}
+      <motion.div
+        style={{ marginBottom: "clamp(20px, min(4.5vw, 4.5vh), 52px)" }}
+        initial={{ opacity: 0, y: 26 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.95, ease, delay: 0.12 }}
       >
-        Antes de avançarmos,<br />
-        <span style={{ color: GOLD }}>preciso entender</span><br />
-        o seu cenário.
-      </motion.h1>
+        <h1
+          style={{
+            fontFamily: SERIF,
+            lineHeight: 1.03,
+            letterSpacing: "-0.028em",
+          } as React.CSSProperties}
+        >
+          {/* Line 1 */}
+          <span
+            style={{
+              display: "block",
+              fontSize: "clamp(44px, min(5.8vw, 7.5vh), 104px)",
+              fontWeight: 400,
+              background: "linear-gradient(135deg, #EEEAE2 0%, #C4BBA8 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            Antes de avançarmos,
+          </span>
+          {/* Line 2 — dominant */}
+          <span
+            style={{
+              display: "block",
+              fontSize: "clamp(52px, min(7.2vw, 9.5vh), 128px)",
+              fontWeight: 600,
+              fontStyle: "italic",
+              background: "linear-gradient(135deg, #D4AC50 0%, #F2D06A 44%, #C08030 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              filter: "drop-shadow(0 0 48px rgba(180,148,60,0.42))",
+            }}
+          >
+            preciso entender
+          </span>
+          {/* Line 3 */}
+          <span
+            style={{
+              display: "block",
+              fontSize: "clamp(38px, min(4.9vw, 6.5vh), 88px)",
+              fontWeight: 400,
+              background: "linear-gradient(135deg, #EEEAE2 0%, #C4BBA8 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            o seu cenário.
+          </span>
+        </h1>
+      </motion.div>
 
+      {/* Divisor editorial */}
       <motion.div
-        {...fadeUp(0.13)}
-        className="w-8 h-px mb-6"
-        style={{ background: GOLD_MUTED }}
-      />
+        {...fadeUp(0.21)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "clamp(14px, min(3.5vw, 3vh), 40px)",
+          maxWidth: "clamp(320px, 40vw, 560px)",
+        }}
+      >
+        <div style={{ width: "36px", height: "1px", background: GOLD_MUTED }} />
+        <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
+      </motion.div>
 
+      {/* Body */}
       <motion.div
-        {...fadeUp(0.16)}
-        className="flex flex-col gap-3.5 mb-6"
-        style={{ color: TEXT_BODY, fontSize: "15px", lineHeight: "1.62", maxWidth: "520px" }}
+        {...fadeUp(0.25)}
+        style={{
+          color: TEXT_BODY,
+          fontSize: "clamp(15px, min(1.2vw, 1.8vh), 19px)",
+          lineHeight: "1.76",
+          maxWidth: "clamp(480px, 50vw, 640px)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "clamp(8px, min(1.2vw, 1.2vh), 18px)",
+          marginBottom: "clamp(14px, min(3vw, 2.5vh), 40px)",
+          letterSpacing: "0.012em",
+        }}
       >
         <p>
           A <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>Sessão Estratégica</strong> é um encontro exclusivo para empresários que querem crescer, vender mais e organizar o negócio com método.
@@ -297,116 +463,140 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
         </p>
       </motion.div>
 
+      {/* Quote */}
       <motion.p
-        {...fadeUp(0.2)}
-        className="text-[14px] leading-[1.6] mb-6 pl-4 border-l"
+        {...fadeUp(0.29)}
         style={{
-          color: "rgba(180,148,60,0.9)",
-          borderColor: GOLD_MUTED,
+          fontFamily: SERIF,
           fontStyle: "italic",
-          maxWidth: "480px",
+          fontSize: "clamp(17px, min(1.55vw, 2.4vh), 24px)",
+          lineHeight: "1.58",
+          color: "rgba(180,148,60,0.82)",
+          borderLeft: `2px solid ${GOLD_MUTED}`,
+          paddingLeft: "clamp(16px, 1.5vw, 24px)",
+          maxWidth: "clamp(460px, 48vw, 620px)",
+          marginBottom: "clamp(18px, min(3.5vw, 3.5vh), 48px)",
         }}
       >
-        Isso garante que a sessão seja <strong style={{ fontWeight: 600 }}>direta, personalizada</strong> e focada em resultado.
+        Isso garante que a sessão seja{" "}
+        <strong style={{ fontWeight: 600 }}>direta, personalizada</strong>{" "}
+        e focada em resultado.
       </motion.p>
 
-      <motion.p
-        {...fadeUp(0.23)}
-        className="text-[13px] mb-7"
-        style={{ color: TEXT_FAINT, maxWidth: "460px" }}
-      >
-        No final, você saberá se faz sentido avançarmos para a sua Sessão Estratégica.
-      </motion.p>
-
-      <motion.div {...fadeUp(0.27)} style={{ maxWidth: "340px" }}>
+      {/* CTA */}
+      <motion.div {...fadeUp(0.33)} style={{ maxWidth: "clamp(330px, 30vw, 420px)", marginBottom: "clamp(6px, min(1.5vw, 1.5vh), 18px)" }}>
         <CtaButton onStart={onStart} />
       </motion.div>
 
-      <motion.p
-        {...fadeUp(0.31)}
-        className="text-[10px] tracking-[0.07em] mt-3"
-        style={{ color: TEXT_GHOST }}
-      >
+      <motion.p {...fadeUp(0.37)} style={{ fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase", color: TEXT_GHOST }}>
         Leva menos de 3 minutos&nbsp;&nbsp;·&nbsp;&nbsp;Vagas limitadas
       </motion.p>
     </>
   )
 }
 
-/* ─────────────────────────────────────────────────
-   Painel direito — desktop only
-───────────────────────────────────────────────── */
+/* ── RIGHT PANEL — pilares editoriais numerados ──────────────── */
 const pillars = [
-  { icon: TrendingUp, label: "Crescimento", desc: "Estratégias para aumentar faturamento com consistência" },
-  { icon: Target,     label: "Posicionamento", desc: "Clareza de mercado, cliente ideal e proposta de valor" },
-  { icon: Users,      label: "Estruturação", desc: "Processos, equipe e gestão para escalar com controle" },
+  { num: "01", label: "Crescimento",    desc: "Estratégias para aumentar faturamento com consistência e previsibilidade" },
+  { num: "02", label: "Posicionamento", desc: "Clareza de mercado, cliente ideal e proposta de valor diferenciada" },
+  { num: "03", label: "Estruturação",   desc: "Processos, equipe e gestão para escalar com controle e método" },
 ]
 
 function RightPanel() {
   return (
     <motion.div
-      initial={{ opacity: 0, x: 12 }}
+      initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col"
+      transition={{ duration: 0.85, delay: 0.22, ease }}
       style={{
-        padding: "0 clamp(32px, 4vw, 56px)",
-        maxWidth: "380px",
+        padding: "0 clamp(24px, 2.8vw, 44px)",
+        maxWidth: "360px",
         width: "100%",
-        gap: "20px",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
+      {/* Logo */}
       <Image
         src={LOGO_SRC}
         alt="IL Negócios"
-        width={148}
-        height={48}
+        width={148} height={48}
         className="object-contain"
         style={{
-          height: "36px",
-          width: "auto",
-          filter: "brightness(1.18) contrast(1.06) drop-shadow(0 2px 10px rgba(180,148,60,0.2))",
+          height: "28px", width: "auto", marginBottom: "28px",
+          filter: "brightness(1.2) contrast(1.06) drop-shadow(0 2px 12px rgba(180,148,60,0.26))",
         }}
       />
 
-      <div style={{ height: "1px", background: "rgba(255,255,255,0.07)" }} />
+      {/* Separador */}
+      <div
+        style={{
+          height: "1px",
+          background: "linear-gradient(90deg, rgba(180,148,60,0.2), rgba(255,255,255,0.04), transparent)",
+          marginBottom: "32px",
+        }}
+      />
 
-      <div className="flex flex-col" style={{ gap: "16px" }}>
-        {pillars.map(({ icon: Icon, label, desc }, i) => (
+      {/* Pilares numerados */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+        {pillars.map(({ num, label, desc }, i) => (
           <motion.div
-            key={label}
-            initial={{ opacity: 0, y: 8 }}
+            key={num}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 + i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-start"
-            style={{ gap: "14px" }}
+            transition={{ delay: 0.33 + i * 0.1, duration: 0.65, ease }}
           >
-            <div
-              className="shrink-0 flex items-center justify-center"
-              style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "8px",
-                background: "rgba(180,148,60,0.1)",
-                border: "1px solid rgba(180,148,60,0.18)",
-                marginTop: "2px",
-              }}
-            >
-              <Icon style={{ width: "15px", height: "15px", color: "rgba(180,148,60,0.85)" }} />
+            <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "6px" }}>
+              <span
+                style={{
+                  fontFamily: SERIF,
+                  fontSize: "30px",
+                  fontWeight: 300,
+                  fontStyle: "italic",
+                  color: "rgba(180,148,60,0.22)",
+                  lineHeight: 1,
+                  letterSpacing: "-0.01em",
+                  minWidth: "36px",
+                }}
+              >
+                {num}
+              </span>
+              <span
+                style={{
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  color: TEXT_PRIMARY,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {label}
+              </span>
             </div>
-            <div>
-              <p className="text-[13px] font-medium mb-0.5" style={{ color: TEXT_PRIMARY }}>{label}</p>
-              <p className="text-[12px] leading-[1.55]" style={{ color: "rgba(240,237,230,0.45)" }}>{desc}</p>
-            </div>
+            <p style={{ fontSize: "11.5px", lineHeight: "1.62", color: "rgba(240,237,230,0.32)", paddingLeft: "48px" }}>
+              {desc}
+            </p>
           </motion.div>
         ))}
       </div>
 
-      <div style={{ height: "1px", background: "rgba(255,255,255,0.07)" }} />
+      {/* Separador */}
+      <div
+        style={{
+          height: "1px",
+          background: "linear-gradient(90deg, rgba(180,148,60,0.16), rgba(255,255,255,0.04), transparent)",
+          marginTop: "32px",
+          marginBottom: "20px",
+        }}
+      />
 
       <p
-        className="text-[10px] font-medium tracking-[0.14em] uppercase"
-        style={{ color: GOLD_FAINT }}
+        style={{
+          fontSize: "9px",
+          fontWeight: 600,
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          color: "rgba(180,148,60,0.35)",
+        }}
       >
         Performance &amp; Resultado
       </p>
@@ -414,36 +604,50 @@ function RightPanel() {
   )
 }
 
-/* ─────────────────────────────────────────────────
-   Botão CTA
-───────────────────────────────────────────────── */
+/* ── CTA BUTTON ──────────────────────────────────────────────── */
 function CtaButton({ onStart }: { onStart: () => void }) {
   return (
-    <button
+    <motion.button
       onClick={onStart}
-      className="group w-full flex items-center justify-center gap-2.5 font-medium tracking-[0.01em] transition-all duration-300"
+      className="group w-full flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden"
       style={{
-        height: "52px",
-        borderRadius: "12px",
-        background: "linear-gradient(135deg, #C9A84C 0%, #B0852A 100%)",
-        color: "#0D0A04",
-        fontSize: "14px",
-        boxShadow: "0 2px 18px rgba(180,148,60,0.24), inset 0 1px 0 rgba(255,255,255,0.14)",
+        height: "54px",
+        borderRadius: "4px",
+        background: "linear-gradient(135deg, #D4AC50 0%, #C49030 50%, #A87020 100%)",
+        color: "#090700",
+        fontSize: "12px",
+        fontWeight: 600,
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+        border: "none",
+        outline: "none",
+        boxShadow: "0 1px 0 rgba(255,255,255,0.18) inset, 0 4px 24px rgba(180,148,60,0.26), 0 1px 4px rgba(0,0,0,0.55)",
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-1px)"
-        e.currentTarget.style.boxShadow = "0 6px 28px rgba(180,148,60,0.34), inset 0 1px 0 rgba(255,255,255,0.14)"
+      whileHover={{
+        y: -2,
+        boxShadow: "0 1px 0 rgba(255,255,255,0.18) inset, 0 14px 44px rgba(180,148,60,0.38), 0 2px 8px rgba(0,0,0,0.55)",
+        transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)"
-        e.currentTarget.style.boxShadow = "0 2px 18px rgba(180,148,60,0.24), inset 0 1px 0 rgba(255,255,255,0.14)"
-      }}
+      whileTap={{ y: 0, scale: 0.985, transition: { duration: 0.12 } }}
     >
-      <span>Começar pré-entrevista</span>
-      <ArrowRight
-        className="shrink-0 transition-transform duration-300 group-hover:translate-x-0.5"
-        style={{ width: "15px", height: "15px" }}
+      {/* Shine sweep */}
+      <motion.span
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.14) 50%, transparent 65%)",
+          backgroundSize: "200% 100%",
+          backgroundPosition: "-100% 0",
+        }}
+        whileHover={{ backgroundPosition: "200% 0", transition: { duration: 0.55, ease: "linear" } }}
       />
-    </button>
+      <span style={{ position: "relative", zIndex: 1 }}>Começar pré-entrevista</span>
+      <motion.span
+        style={{ position: "relative", zIndex: 1, display: "flex" }}
+        initial={{ x: 0 }}
+        whileHover={{ x: 4, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }}
+      >
+        <ArrowRight style={{ width: "14px", height: "14px" }} />
+      </motion.span>
+    </motion.button>
   )
 }
