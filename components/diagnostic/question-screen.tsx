@@ -238,18 +238,33 @@ export function QuestionScreen({
               }}
             >
 
-              {/* Top catch-light — thin gold spectral line */}
+              {/* Top catch-light — spectral line com pico central branco-dourado */}
               <div
                 aria-hidden
                 style={{
                   position: "absolute",
                   top: 0,
-                  left: "8%",
-                  right: "8%",
+                  left: "6%",
+                  right: "6%",
                   height: "1px",
                   background:
-                    "linear-gradient(90deg, transparent, rgba(180,148,60,0.42), transparent)",
+                    "linear-gradient(90deg, transparent 0%, rgba(180,148,60,0.28) 20%, rgba(255,248,220,0.55) 45%, rgba(255,255,255,0.42) 50%, rgba(255,248,220,0.55) 55%, rgba(180,148,60,0.28) 80%, transparent 100%)",
                   pointerEvents: "none",
+                }}
+              />
+
+              {/* Reflexo diagonal — canto superior direito */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: "35%",
+                  height: "50%",
+                  background: "radial-gradient(ellipse at 88% 0%, rgba(255,248,200,0.055) 0%, transparent 68%)",
+                  pointerEvents: "none",
+                  borderRadius: "0 12px 0 0",
                 }}
               />
 
@@ -261,9 +276,9 @@ export function QuestionScreen({
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: "72px",
+                  height: "80px",
                   background:
-                    "linear-gradient(to bottom, rgba(255,255,255,0.022), transparent)",
+                    "linear-gradient(to bottom, rgba(255,255,255,0.032), transparent)",
                   pointerEvents: "none",
                   borderRadius: "12px 12px 0 0",
                 }}
@@ -358,10 +373,12 @@ export function QuestionScreen({
                   fontSize: "clamp(24px, 4.2vw, 52px)",
                   fontWeight: 600,
                   lineHeight: 1.15,
-                  color: "#FDFCFA",
                   letterSpacing: "-0.025em",
                   marginBottom: "clamp(18px, 2.8vh, 36px)",
-                  textShadow: "0 1px 28px rgba(180,148,60,0.14)",
+                  background: "linear-gradient(118deg, #FEFCF8 0%, #F0EBE0 38%, #D8D0C0 75%, #C0B8A8 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
                 }}
               >
                 {question.text}
