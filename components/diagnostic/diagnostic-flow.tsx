@@ -365,7 +365,7 @@ Quero avançar para a Sessão Estratégica.`
       />
 
       {/* ── Content ── */}
-      <div className="relative z-10 flex flex-col flex-1 overflow-hidden">
+      <div className="relative z-10 flex flex-col flex-1 overflow-hidden min-h-0">
         <ProgressBar
           current={currentQuestionIndex + 1}
           total={totalQuestions}

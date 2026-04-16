@@ -175,7 +175,7 @@ export function QuestionScreen({
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-6 overflow-y-auto">
+    <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-3 sm:py-4 overflow-y-auto min-h-0">
       {/* ── maxWidth container ── */}
       <div className="w-full" style={{ maxWidth: "740px" }}>
         <AnimatePresence mode="wait">
@@ -207,7 +207,7 @@ export function QuestionScreen({
                 WebkitBackdropFilter: "blur(32px)",
                 border: "1px solid rgba(180,148,60,0.18)",
                 borderRadius: "12px",
-                padding: "clamp(28px, 5vw, 60px) clamp(24px, 5vw, 56px) clamp(24px, 4.5vw, 52px)",
+                padding: "clamp(20px, 3.5vh, 40px) clamp(24px, 5vw, 56px) clamp(18px, 3vh, 36px)",
                 boxShadow: [
                   // Thin gold outline ring — separates card edge from bg
                   "0 0 0 1px rgba(180,148,60,0.07)",
@@ -261,14 +261,14 @@ export function QuestionScreen({
                   display: "flex",
                   alignItems: "flex-start",
                   justifyContent: "space-between",
-                  marginBottom: "clamp(28px, 4vw, 52px)",
+                  marginBottom: "clamp(16px, 2.8vh, 36px)",
                 }}
               >
                 {/* Ghost number */}
                 <span
                   style={{
                     fontFamily: SERIF,
-                    fontSize: "clamp(52px, 9vw, 100px)",
+                    fontSize: "clamp(44px, 7vw, 76px)",
                     fontWeight: 300,
                     fontStyle: "italic",
                     lineHeight: 0.9,
@@ -328,12 +328,12 @@ export function QuestionScreen({
               <h2
                 style={{
                   fontFamily: SERIF,
-                  fontSize: "clamp(27px, 5.2vw, 64px)",
+                  fontSize: "clamp(24px, 4.2vw, 52px)",
                   fontWeight: 600,
                   lineHeight: 1.15,
                   color: "#FDFCFA",
                   letterSpacing: "-0.025em",
-                  marginBottom: "clamp(28px, 4vw, 52px)",
+                  marginBottom: "clamp(18px, 2.8vh, 36px)",
                   textShadow: "0 1px 28px rgba(180,148,60,0.14)",
                 }}
               >
@@ -344,7 +344,7 @@ export function QuestionScreen({
                   TEXT / NAME
               ───────────────────────────────────────── */}
               {isTextType && question.type !== "textarea" && (
-                <div style={{ marginBottom: "clamp(28px, 4vw, 52px)" }}>
+                <div style={{ marginBottom: "clamp(16px, 2.8vh, 36px)" }}>
                   <div style={{ position: "relative" }}>
                     <input
                       ref={inputRef}
@@ -431,7 +431,7 @@ export function QuestionScreen({
                   TEXTAREA
               ───────────────────────────────────────── */}
               {question.type === "textarea" && (
-                <div style={{ marginBottom: "clamp(28px, 4vw, 52px)" }}>
+                <div style={{ marginBottom: "clamp(16px, 2.8vh, 36px)" }}>
                   <textarea
                     ref={textareaRef}
                     key={question.id}
@@ -622,7 +622,7 @@ export function QuestionScreen({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    paddingTop: "clamp(8px, 2vw, 24px)",
+                    paddingTop: "clamp(8px, 1.8vh, 18px)",
                   }}
                 >
                   <BackButton onClick={onBack} />
@@ -641,7 +641,7 @@ export function QuestionScreen({
                   style={{
                     display: "flex",
                     justifyContent: "flex-start",
-                    paddingTop: "clamp(16px, 2vw, 28px)",
+                    paddingTop: "clamp(10px, 1.6vh, 20px)",
                   }}
                 >
                   <BackButton onClick={onBack} />
@@ -685,8 +685,8 @@ function SelectOption({
         display: "flex",
         alignItems: "center",
         gap: "clamp(14px, 1.5vw, 20px)",
-        paddingTop: "clamp(13px, 1.4vw, 18px)",
-        paddingBottom: "clamp(13px, 1.4vw, 18px)",
+        paddingTop: "clamp(10px, 1.2vh, 15px)",
+        paddingBottom: "clamp(10px, 1.2vh, 15px)",
         paddingLeft: 0,
         paddingRight: 0,
         background: isSelected ? "rgba(180,148,60,0.05)" : "transparent",
