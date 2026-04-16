@@ -158,9 +158,10 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           {/* Right accent panel */}
           <div
             style={{
-              width: "clamp(240px, 24vw, 360px)",
+              width: "clamp(300px, 30vw, 440px)",
               flexShrink: 0,
-              borderLeft: "1px solid rgba(255,255,255,0.05)",
+              borderLeft: "1px solid rgba(255,255,255,0.07)",
+              background: "linear-gradient(180deg, rgba(180,148,60,0.018) 0%, transparent 60%)",
               display: "flex",
               alignItems: "center",
             }}
@@ -514,8 +515,8 @@ function RightPanel() {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.85, delay: 0.22, ease }}
       style={{
-        padding: "0 clamp(24px, 2.8vw, 44px)",
-        maxWidth: "360px",
+        padding: "0 clamp(32px, 3.2vw, 56px)",
+        maxWidth: "100%",
         width: "100%",
         display: "flex",
         flexDirection: "column",
@@ -528,8 +529,8 @@ function RightPanel() {
         width={148} height={48}
         className="object-contain"
         style={{
-          height: "28px", width: "auto", marginBottom: "28px",
-          filter: "brightness(1.2) contrast(1.06) drop-shadow(0 2px 12px rgba(180,148,60,0.26))",
+          height: "32px", width: "auto", marginBottom: "32px",
+          filter: "brightness(1.2) contrast(1.06) drop-shadow(0 2px 16px rgba(180,148,60,0.32))",
         }}
       />
 
@@ -537,13 +538,13 @@ function RightPanel() {
       <div
         style={{
           height: "1px",
-          background: "linear-gradient(90deg, rgba(180,148,60,0.2), rgba(255,255,255,0.04), transparent)",
-          marginBottom: "32px",
+          background: "linear-gradient(90deg, rgba(180,148,60,0.32), rgba(180,148,60,0.08), transparent)",
+          marginBottom: "36px",
         }}
       />
 
       {/* Pilares numerados */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
         {pillars.map(({ num, label, desc }, i) => (
           <motion.div
             key={num}
@@ -551,33 +552,34 @@ function RightPanel() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.33 + i * 0.1, duration: 0.65, ease }}
           >
-            <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "6px" }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "14px", marginBottom: "8px" }}>
               <span
                 style={{
                   fontFamily: SERIF,
-                  fontSize: "30px",
+                  fontSize: "38px",
                   fontWeight: 300,
                   fontStyle: "italic",
-                  color: "rgba(180,148,60,0.22)",
+                  color: "rgba(180,148,60,0.28)",
                   lineHeight: 1,
                   letterSpacing: "-0.01em",
-                  minWidth: "36px",
+                  minWidth: "44px",
                 }}
               >
                 {num}
               </span>
               <span
                 style={{
-                  fontSize: "13px",
+                  fontSize: "14px",
                   fontWeight: 600,
                   color: TEXT_PRIMARY,
-                  letterSpacing: "0.02em",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
                 }}
               >
                 {label}
               </span>
             </div>
-            <p style={{ fontSize: "11.5px", lineHeight: "1.62", color: "rgba(240,237,230,0.32)", paddingLeft: "48px" }}>
+            <p style={{ fontSize: "12.5px", lineHeight: "1.68", color: "rgba(240,237,230,0.44)", paddingLeft: "58px" }}>
               {desc}
             </p>
           </motion.div>
@@ -588,9 +590,9 @@ function RightPanel() {
       <div
         style={{
           height: "1px",
-          background: "linear-gradient(90deg, rgba(180,148,60,0.16), rgba(255,255,255,0.04), transparent)",
-          marginTop: "32px",
-          marginBottom: "20px",
+          background: "linear-gradient(90deg, rgba(180,148,60,0.24), rgba(180,148,60,0.06), transparent)",
+          marginTop: "36px",
+          marginBottom: "22px",
         }}
       />
 
@@ -598,9 +600,9 @@ function RightPanel() {
         style={{
           fontSize: "9px",
           fontWeight: 600,
-          letterSpacing: "0.22em",
+          letterSpacing: "0.26em",
           textTransform: "uppercase",
-          color: "rgba(180,148,60,0.35)",
+          color: "rgba(180,148,60,0.45)",
         }}
       >
         Performance &amp; Resultado
