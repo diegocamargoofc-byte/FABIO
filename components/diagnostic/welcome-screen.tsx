@@ -403,7 +403,6 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
-              filter: "drop-shadow(0 1px 12px rgba(240,237,230,0.1))",
             }}
           >
             Antes de avançarmos,
@@ -434,7 +433,6 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
-              filter: "drop-shadow(0 1px 12px rgba(240,237,230,0.1))",
             }}
           >
             o seu cenário.
