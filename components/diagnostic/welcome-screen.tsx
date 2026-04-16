@@ -293,9 +293,14 @@ function MobileContent({ onStart }: { onStart: () => void }) {
           A <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>Sessão Estratégica</strong> é um encontro exclusivo para empresários que querem crescer, vender mais e organizar o negócio com método.
         </p>
         <p>
-          Vou analisar seu momento atual e mostrar os{" "}
+          Vou analisar o seu momento atual e mostrar, com clareza, os{" "}
           <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>erros e oportunidades</strong>{" "}
-          que limitam o seu <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>faturamento</strong>.
+          que podem estar limitando o seu <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>faturamento</strong>.
+        </p>
+        <p>
+          Para isso, você responderá uma{" "}
+          <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>pré-entrevista rápida</strong>{" "}
+          sobre o seu negócio.
         </p>
       </motion.div>
 
@@ -319,7 +324,7 @@ function MobileContent({ onStart }: { onStart: () => void }) {
       >
         Isso garante que a sessão seja{" "}
         <strong style={{ fontWeight: 600 }}>direta, personalizada</strong>{" "}
-        e focada em resultado.
+        e focada em resultados.
       </motion.p>
 
       {/* CTA */}
@@ -451,13 +456,13 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
           A <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>Sessão Estratégica</strong> é um encontro exclusivo para empresários que querem crescer, vender mais e organizar o negócio com método.
         </p>
         <p>
-          Vou analisar seu momento atual e mostrar com clareza os{" "}
+          Vou analisar o seu momento atual e mostrar, com clareza, os{" "}
           <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>erros e oportunidades</strong>{" "}
           que podem estar limitando o seu{" "}
           <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>faturamento</strong>.
         </p>
         <p>
-          Para isso, você vai responder uma{" "}
+          Para isso, você responderá uma{" "}
           <strong style={{ color: TEXT_PRIMARY, fontWeight: 500 }}>pré-entrevista rápida</strong>{" "}
           sobre o seu negócio.
         </p>
@@ -480,7 +485,7 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
       >
         Isso garante que a sessão seja{" "}
         <strong style={{ fontWeight: 600 }}>direta, personalizada</strong>{" "}
-        e focada em resultado.
+        e focada em resultados.
       </motion.p>
 
       {/* CTA */}
