@@ -27,15 +27,23 @@ function applyPhoneMask(raw: string): string {
 }
 void applyPhoneMask
 
-function validateField(type: Question["type"], value: string, extra?: string): string | null {
+function validateField(type: Question["type"], value: string, extra?: string, questionId?: number): string | null {
   const v = value.trim()
   if (!v) return "Este campo é obrigatório"
   if (type === "name") {
-    if (!/^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(v)) return "Digite apenas letras, sem números"
+    if (!/^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(v)) return "Por favor, informe seu nome completo."
+    const words = v.split(/\s+/).filter(Boolean)
+    if (words.length < 2) return "Por favor, informe seu nome completo."
     return null
   }
   if (type === "email") {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return "Digite um e-mail válido"
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return "Digite um e-mail válido."
+    return null
+  }
+  if (type === "text" && questionId === 19) {
+    if (v.includes("instagram.com")) return "Informe seu @ do Instagram corretamente."
+    if (!v.startsWith("@")) return "Informe seu @ do Instagram corretamente."
+    if (v.length < 4) return "Informe seu @ do Instagram corretamente."
     return null
   }
   if (type === "select-with-text") {
@@ -109,8 +117,9 @@ export function QuestionScreen({
   const inputRef      = useRef<HTMLInputElement>(null)
   const textareaRef   = useRef<HTMLTextAreaElement>(null)
 
-  const errorMessage = touched ? validateField(question.type, value, extraValue) : null
+  const errorMessage = touched ? validateField(question.type, value, extraValue, question.id) : null
   const hasError     = !!errorMessage
+  const isValid      = touched && !errorMessage && value.trim().length > 0
 
   const handleChange = useCallback(
     (raw: string) => {
@@ -392,14 +401,18 @@ export function QuestionScreen({
                           left: 0,
                           right: 0,
                           height: "1px",
-                          background: `linear-gradient(90deg, transparent 0%, ${GOLD} 25%, ${GOLD} 75%, transparent 100%)`,
+                          background: isValid
+                            ? "linear-gradient(90deg, transparent 0%, rgba(120,200,120,0.55) 25%, rgba(120,200,120,0.55) 75%, transparent 100%)"
+                            : `linear-gradient(90deg, transparent 0%, ${GOLD} 25%, ${GOLD} 75%, transparent 100%)`,
                           transformOrigin: "center",
                           pointerEvents: "none",
                         }}
                         animate={{
-                          scaleX: textFocused ? 1 : 0,
-                          opacity: textFocused ? 1 : 0,
-                          boxShadow: textFocused
+                          scaleX: textFocused || isValid ? 1 : 0,
+                          opacity: textFocused || isValid ? 1 : 0,
+                          boxShadow: isValid
+                            ? "0 0 8px 1px rgba(120,200,120,0.18)"
+                            : textFocused
                             ? "0 0 10px 2px rgba(180,148,60,0.32)"
                             : "none",
                         }}
@@ -812,7 +825,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
   )
 }
 
-/* ── ContinueButton ──────────��────────────────────────────────────────────── */
+/* ── ContinueButton ──────────��─────────────────────���──────────────────────── */
 
 function ContinueButton({
   onClick,

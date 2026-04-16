@@ -228,7 +228,16 @@ export function DiagnosticFlow() {
   const isAnswerValid = (question: Question, value: string, extraValue?: string): boolean => {
     if (!value.trim()) return false
     if (question.type === "name") {
-      return /^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(value.trim())
+      const words = value.trim().split(/\s+/).filter(Boolean)
+      return words.length >= 2 && /^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(value.trim())
+    }
+    if (question.type === "email") {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+    }
+    if (question.type === "text" && question.id === 19) {
+      // Instagram
+      const v = value.trim()
+      return v.startsWith("@") && v.length >= 4 && !v.includes("instagram.com")
     }
     if (question.type === "select-with-text") {
       if (value === "Outro") return !!(extraValue && extraValue.trim().length >= 2)
@@ -264,7 +273,8 @@ export function DiagnosticFlow() {
     let message = `Olá! Acabei de preencher a pré-entrevista da Sessão Estratégica IL Negócios.
 
 *Nome:* ${a(1)}
-*Instagram:* ${a(2)}
+*E-mail:* ${a(2)}
+*Instagram:* ${a(19)}
 *Empresa:* ${a(3)}
 *Segmento:* ${a(4)}
 *Tempo no mercado:* ${a(5)}
