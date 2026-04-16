@@ -8,7 +8,7 @@ interface WelcomeScreenProps {
   onStart: () => void
 }
 
-const LOGO_SRC     = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9445.PNG-N9T7xNmMLXKf0pEjipobXSb0q2Pwdj.png"
+const LOGO_SRC     = "/logo-il-negocios.png"
 const GOLD         = "rgba(180,148,60,1)"
 const GOLD_DIM     = "rgba(180,148,60,0.72)"
 const GOLD_MUTED   = "rgba(180,148,60,0.28)"
@@ -114,11 +114,11 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           <Image
             src={LOGO_SRC}
             alt="IL Negócios — Performance & Resultado"
-            width={144} height={46} priority
+            width={180} height={58} priority
             className="object-contain"
             style={{
-              height: "28px", width: "auto",
-              filter: "brightness(1.18) contrast(1.06) drop-shadow(0 1px 10px rgba(180,148,60,0.22))",
+              height: "36px", width: "auto",
+              filter: "brightness(1.18) contrast(1.06) drop-shadow(0 1px 14px rgba(180,148,60,0.28))",
             }}
           />
         </motion.div>
@@ -148,21 +148,39 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           {/* Left column */}
           <div
             className="flex-1 min-w-0 flex items-center"
-            style={{ padding: "0 clamp(64px, 7vw, 130px)" }}
+            style={{ padding: "0 clamp(48px, 5.5vw, 96px)" }}
           >
-            <div style={{ width: "100%", maxWidth: "960px" }}>
+            <div style={{ width: "100%", maxWidth: "680px" }}>
               <DesktopContent onStart={onStart} />
             </div>
           </div>
 
+          {/* Glow central — conexão visual entre colunas */}
+          <div
+            className="absolute pointer-events-none hidden lg:block"
+            style={{
+              top: "50%",
+              right: "clamp(300px, 30vw, 440px)",
+              transform: "translate(50%, -50%)",
+              width: "320px",
+              height: "320px",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(180,148,60,0.055) 0%, rgba(180,148,60,0.012) 45%, transparent 72%)",
+              zIndex: 1,
+            }}
+          />
+
           {/* Right accent panel */}
           <div
             style={{
-              width: "clamp(240px, 24vw, 360px)",
+              width: "clamp(300px, 30vw, 440px)",
               flexShrink: 0,
-              borderLeft: "1px solid rgba(255,255,255,0.05)",
+              borderLeft: "1px solid rgba(180,148,60,0.12)",
+              background: "linear-gradient(160deg, rgba(180,148,60,0.04) 0%, rgba(180,148,60,0.01) 50%, transparent 100%)",
               display: "flex",
               alignItems: "center",
+              position: "relative",
+              zIndex: 2,
             }}
           >
             <RightPanel />
@@ -381,7 +399,7 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
               display: "block",
               fontSize: "clamp(44px, min(5.8vw, 7.5vh), 104px)",
               fontWeight: 400,
-              background: "linear-gradient(135deg, #EEEAE2 0%, #C4BBA8 100%)",
+              background: "linear-gradient(135deg, #F8F4EC 0%, #DDD5C0 60%, #C4BBA8 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -411,7 +429,7 @@ function DesktopContent({ onStart }: { onStart: () => void }) {
               display: "block",
               fontSize: "clamp(38px, min(4.9vw, 6.5vh), 88px)",
               fontWeight: 400,
-              background: "linear-gradient(135deg, #EEEAE2 0%, #C4BBA8 100%)",
+              background: "linear-gradient(135deg, #F8F4EC 0%, #DDD5C0 60%, #C4BBA8 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -514,83 +532,122 @@ function RightPanel() {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.85, delay: 0.22, ease }}
       style={{
-        padding: "0 clamp(24px, 2.8vw, 44px)",
-        maxWidth: "360px",
+        padding: "clamp(40px, 5vh, 72px) clamp(32px, 3.2vw, 52px)",
         width: "100%",
         display: "flex",
         flexDirection: "column",
+        height: "100%",
+        justifyContent: "center",
       }}
     >
       {/* Logo */}
-      <Image
-        src={LOGO_SRC}
-        alt="IL Negócios"
-        width={148} height={48}
-        className="object-contain"
-        style={{
-          height: "28px", width: "auto", marginBottom: "28px",
-          filter: "brightness(1.2) contrast(1.06) drop-shadow(0 2px 12px rgba(180,148,60,0.26))",
-        }}
-      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.9, delay: 0.18 }}
+        style={{ marginBottom: "clamp(24px, 3.5vh, 44px)" }}
+      >
+        <Image
+          src={LOGO_SRC}
+          alt="IL Negócios"
+          width={220} height={72}
+          className="object-contain object-left"
+          style={{
+            height: "clamp(44px, 5.5vh, 64px)", width: "auto",
+            filter: "brightness(1.22) contrast(1.08) drop-shadow(0 2px 20px rgba(180,148,60,0.38))",
+          }}
+        />
+      </motion.div>
 
       {/* Separador */}
       <div
         style={{
           height: "1px",
-          background: "linear-gradient(90deg, rgba(180,148,60,0.2), rgba(255,255,255,0.04), transparent)",
-          marginBottom: "32px",
+          background: "linear-gradient(90deg, rgba(180,148,60,0.38), rgba(180,148,60,0.08), transparent)",
+          marginBottom: "clamp(24px, 3.5vh, 44px)",
         }}
       />
 
-      {/* Pilares numerados */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+      {/* Pilares em cards */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "clamp(12px, 1.8vh, 20px)" }}>
         {pillars.map(({ num, label, desc }, i) => (
           <motion.div
             key={num}
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.33 + i * 0.1, duration: 0.65, ease }}
+            style={{
+              border: "1px solid rgba(180,148,60,0.22)",
+              borderRadius: "6px",
+              background: "linear-gradient(135deg, rgba(180,148,60,0.09) 0%, rgba(180,148,60,0.03) 100%)",
+              padding: "clamp(14px, 2vh, 22px) clamp(16px, 1.8vw, 24px)",
+              position: "relative",
+              overflow: "hidden",
+              boxShadow: "0 1px 18px rgba(180,148,60,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+            }}
           >
-            <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "6px" }}>
+            {/* Accent corner */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "3px",
+                height: "100%",
+                background: "linear-gradient(180deg, rgba(180,148,60,0.55) 0%, rgba(180,148,60,0.08) 100%)",
+                borderRadius: "6px 0 0 6px",
+              }}
+            />
+            <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "6px", paddingLeft: "12px" }}>
               <span
                 style={{
                   fontFamily: SERIF,
-                  fontSize: "30px",
+                  fontSize: "clamp(28px, 3.2vw, 40px)",
                   fontWeight: 300,
                   fontStyle: "italic",
-                  color: "rgba(180,148,60,0.22)",
+                  color: "rgba(180,148,60,0.35)",
                   lineHeight: 1,
                   letterSpacing: "-0.01em",
-                  minWidth: "36px",
+                  minWidth: "38px",
                 }}
               >
                 {num}
               </span>
               <span
                 style={{
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  color: TEXT_PRIMARY,
-                  letterSpacing: "0.02em",
+                  fontSize: "clamp(11px, 1vw, 13px)",
+                  fontWeight: 700,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  background: "linear-gradient(135deg, #F5EFE0 0%, #E8D99A 38%, #F0E6C4 62%, #C8B878 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  filter: "drop-shadow(0 0 8px rgba(180,148,60,0.32))",
                 }}
               >
                 {label}
               </span>
             </div>
-            <p style={{ fontSize: "11.5px", lineHeight: "1.62", color: "rgba(240,237,230,0.32)", paddingLeft: "48px" }}>
+            <p style={{
+              fontSize: "clamp(11.5px, 0.95vw, 13.5px)",
+              lineHeight: "1.65",
+              color: "rgba(240,237,230,0.68)",
+              paddingLeft: "12px",
+            }}>
               {desc}
             </p>
           </motion.div>
         ))}
       </div>
 
-      {/* Separador */}
+      {/* Rodapé */}
       <div
         style={{
           height: "1px",
-          background: "linear-gradient(90deg, rgba(180,148,60,0.16), rgba(255,255,255,0.04), transparent)",
-          marginTop: "32px",
-          marginBottom: "20px",
+          background: "linear-gradient(90deg, rgba(180,148,60,0.22), rgba(180,148,60,0.05), transparent)",
+          marginTop: "clamp(24px, 3vh, 40px)",
+          marginBottom: "16px",
         }}
       />
 
@@ -598,9 +655,9 @@ function RightPanel() {
         style={{
           fontSize: "9px",
           fontWeight: 600,
-          letterSpacing: "0.22em",
+          letterSpacing: "0.28em",
           textTransform: "uppercase",
-          color: "rgba(180,148,60,0.35)",
+          color: "rgba(180,148,60,0.45)",
         }}
       >
         Performance &amp; Resultado
@@ -645,7 +702,7 @@ function CtaButton({ onStart }: { onStart: () => void }) {
         }}
         whileHover={{ backgroundPosition: "200% 0", transition: { duration: 0.55, ease: "linear" } }}
       />
-      <span style={{ position: "relative", zIndex: 1 }}>Começar pré-entrevista</span>
+      <span style={{ position: "relative", zIndex: 1 }}>Começar</span>
       <motion.span
         style={{ position: "relative", zIndex: 1, display: "flex" }}
         initial={{ x: 0 }}
