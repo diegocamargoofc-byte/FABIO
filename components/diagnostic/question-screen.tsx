@@ -34,6 +34,10 @@ function validateField(type: Question["type"], value: string, extra?: string): s
     if (!/^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(v)) return "Digite apenas letras, sem números"
     return null
   }
+  if (type === "email") {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return "Digite um e-mail válido"
+    return null
+  }
   if (type === "select-with-text") {
     if (v === "Outro") {
       if (!extra || extra.trim().length < 2) return "Por favor, descreva sua resposta"
@@ -111,6 +115,7 @@ export function QuestionScreen({
   const handleChange = useCallback(
     (raw: string) => {
       if (question.type === "name") onChange(raw.replace(/[0-9]/g, ""))
+      else if (question.type === "email") onChange(raw.trim().toLowerCase())
       else onChange(raw)
     },
     [question.type, onChange]
@@ -148,7 +153,7 @@ export function QuestionScreen({
     if (canProceed) onAutoAdvance(value, extraValue)
   }
 
-  const isTextType       = ["text", "name", "textarea"].includes(question.type)
+  const isTextType       = ["text", "name", "email", "textarea"].includes(question.type)
   const isSelectType     = question.type === "select"
   const isSelectWithText = question.type === "select-with-text"
 
@@ -351,8 +356,9 @@ export function QuestionScreen({
                       key={question.id}
                       type="text"
                       inputMode="text"
-                      autoCapitalize={question.type === "name" ? "words" : "sentences"}
-                      autoComplete={question.type === "name" ? "name" : "off"}
+                autoCapitalize={question.type === "name" ? "words" : "none"}
+                autoComplete={question.type === "name" ? "name" : question.type === "email" ? "email" : "off"}
+                inputMode={question.type === "email" ? "email" : undefined}
                       value={value}
                       onChange={(e) => handleChange(e.target.value)}
                       onFocus={() => setTextFocused(true)}
@@ -806,7 +812,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
   )
 }
 
-/* ── ContinueButton ───────────────────────────────────────────────────────── */
+/* ── ContinueButton ──────────��────────────────────────────────────────────── */
 
 function ContinueButton({
   onClick,

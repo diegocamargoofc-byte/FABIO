@@ -21,7 +21,7 @@ export type { DiagnosticResult }
 export interface Question {
   id: number
   text: string
-  type: "text" | "name" | "select" | "select-with-text" | "textarea"
+  type: "text" | "name" | "email" | "select" | "select-with-text" | "textarea"
   options?: string[]
   placeholder?: string
   conditionalOn?: {
@@ -40,6 +40,12 @@ const questions: Question[] = [
   },
   {
     id: 2,
+    text: "Qual é o seu e-mail?",
+    type: "email",
+    placeholder: "Ex: seuemail@gmail.com",
+  },
+  {
+    id: 19,
     text: "Qual é o seu Instagram?",
     type: "text",
     placeholder: "@seuinstagram",
