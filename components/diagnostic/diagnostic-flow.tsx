@@ -45,12 +45,6 @@ const questions: Question[] = [
     placeholder: "Ex: seuemail@gmail.com",
   },
   {
-    id: 19,
-    text: "Qual é o seu Instagram?",
-    type: "text",
-    placeholder: "@seuinstagram",
-  },
-  {
     id: 3,
     text: "Qual é o nome da sua empresa?",
     type: "text",
@@ -81,74 +75,10 @@ const questions: Question[] = [
     options: ["Crescendo", "Estagnada", "Caindo"],
   },
   {
-    id: 8,
-    text: "Qual é o seu maior desafio hoje?",
-    type: "select-with-text",
-    options: ["Falta de clientes", "Baixa conversão", "Equipe não performa", "Falta de processo", "Clientes não voltam", "Outro"],
-  },
-  {
-    id: 9,
-    text: "Você investe em marketing atualmente?",
-    type: "select",
-    options: ["Sim, com resultado", "Sim, sem resultado", "Não"],
-  },
-  {
-    id: 10,
-    text: "Você possui equipe de vendas ou atendimento?",
-    type: "select",
-    options: ["Sim", "Não"],
-  },
-  {
-    id: 11,
-    text: "Sua equipe performa bem?",
-    type: "select",
-    options: ["Sim", "Não", "Pode melhorar muito"],
-    conditionalOn: {
-      questionId: 10,
-      value: "Sim",
-    },
-  },
-  {
-    id: 12,
-    text: "Seus clientes costumam voltar?",
-    type: "select",
-    options: ["Sim", "Às vezes", "Raramente"],
-  },
-  {
-    id: 13,
-    text: "Você tem processos definidos na empresa?",
-    type: "select",
-    options: ["Sim", "Mais ou menos", "Não"],
-  },
-  {
-    id: 14,
-    text: "Se você parar hoje, a empresa funciona?",
-    type: "select",
-    options: ["Sim", "Parcialmente", "Não"],
-  },
-  {
-    id: 15,
-    text: "Qual é seu principal objetivo hoje?",
-    type: "select-with-text",
-    options: ["Vender mais", "Organizar a empresa", "Crescer", "Montar equipe", "Outro"],
-  },
-  {
-    id: 16,
-    text: "Você está disposto a investir para crescer seu negócio?",
-    type: "select",
-    options: ["Sim", "Depende da proposta", "Não"],
-  },
-  {
-    id: 17,
-    text: "Em quanto tempo você quer ver resultados?",
-    type: "select",
-    options: ["Imediato", "1 a 3 meses", "Sem pressa"],
-  },
-  {
-    id: 18,
-    text: "Por que você acredita que sua empresa ainda não chegou no nível que poderia?",
-    type: "textarea",
-    placeholder: "Escreva com sinceridade. Essa resposta é fundamental para entendermos seu cenário.",
+    id: 19,
+    text: "Qual é o Instagram da sua empresa?",
+    type: "text",
+    placeholder: "@instagramdaempresa",
   },
 ]
 
@@ -264,40 +194,21 @@ export function DiagnosticFlow() {
     const WHATSAPP_NUMBER = "5513996145959"
 
     const a = (id: number) => getAnswer(id)
-    const x = (id: number) => getExtraAnswer(id)
 
-    const desafio = a(8) === "Outro" ? `Outro: ${x(8)}` : a(8)
-    const objetivo = a(15) === "Outro" ? `Outro: ${x(15)}` : a(15)
-    const temEquipe = a(10)
+    const message = `Olá, tudo bem? Acabei de preencher o diagnóstico da TL Negócios.
 
-    let message = `Olá! Acabei de preencher a pré-entrevista da Sessão Estratégica IL Negócios.
+Minhas respostas foram:
 
-*Nome:* ${a(1)}
-*E-mail:* ${a(2)}
-*Instagram:* ${a(19)}
-*Empresa:* ${a(3)}
-*Segmento:* ${a(4)}
-*Tempo no mercado:* ${a(5)}
-*Faturamento médio mensal:* ${a(6)}
-*Situação atual:* ${a(7)}
-*Maior desafio:* ${desafio}
-*Investe em marketing:* ${a(9)}
-*Possui equipe:* ${temEquipe}`
+1. Qual é o seu nome completo?: ${a(1)}
+2. Qual é o seu e-mail?: ${a(2)}
+3. Qual é o nome da sua empresa?: ${a(3)}
+4. Qual é o seu segmento?: ${a(4)}
+5. Há quanto tempo você está no mercado?: ${a(5)}
+6. Qual é o seu faturamento médio mensal?: ${a(6)}
+7. Hoje sua empresa está:: ${a(7)}
+8. Qual é o Instagram da sua empresa?: ${a(19)}
 
-    if (temEquipe === "Sim") {
-      message += `\n*Equipe performa bem:* ${a(11)}`
-    }
-
-    message += `
-*Clientes voltam:* ${a(12)}
-*Processos definidos:* ${a(13)}
-*Empresa funciona sem mim:* ${a(14)}
-*Objetivo principal:* ${objetivo}
-*Disposto a investir:* ${a(16)}
-*Prazo para resultados:* ${a(17)}
-*Por que ainda não chegou lá:* ${a(18)}
-
-Quero avançar para a Sessão Estratégica.`
+Gostaria de avançar para a Sessão Estratégica.`
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank")
   }
