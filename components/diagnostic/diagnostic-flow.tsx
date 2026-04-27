@@ -195,7 +195,7 @@ export function DiagnosticFlow() {
 
     const a = (id: number) => getAnswer(id)
 
-    const message = `Olá, tudo bem? Acabei de preencher o diagnóstico da TL Negócios.
+    const message = `Olá, tudo bem? Acabei de preencher o diagnóstico da IL Negócios.
 
 Minhas respostas foram:
 
