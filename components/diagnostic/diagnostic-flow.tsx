@@ -76,9 +76,9 @@ const questions: Question[] = [
   },
   {
     id: 19,
-    text: "Qual é o seu Instagram?",
+    text: "Qual é o Instagram da sua empresa?",
     type: "text",
-    placeholder: "@seuinstagram",
+    placeholder: "@instagramdaempresa",
   },
 ]
 
@@ -206,7 +206,7 @@ Minhas respostas foram:
 5. Há quanto tempo você está no mercado?: ${a(5)}
 6. Qual é o seu faturamento médio mensal?: ${a(6)}
 7. Hoje sua empresa está:: ${a(7)}
-8. Qual é o seu Instagram?: ${a(19)}
+8. Qual é o Instagram da sua empresa?: ${a(19)}
 
 Gostaria de avançar para a Sessão Estratégica.`
 
