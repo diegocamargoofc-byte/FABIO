@@ -21,23 +21,34 @@ const jost = Jost({
 export const metadata: Metadata = {
   title: 'Diagnóstico Estratégico de Crescimento',
   description: 'Identifique o momento atual da sua empresa, gargalos e potencial de crescimento.',
-  generator: 'v0.app',
+  metadataBase: new URL('https://www.ilnegocios.com.br'),
+  openGraph: {
+    title: 'Diagnóstico Estratégico de Crescimento',
+    description: 'Identifique o momento atual da sua empresa, gargalos e potencial de crescimento.',
+    url: 'https://www.ilnegocios.com.br/',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'IL Negócios — Performance & Resultado',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Diagnóstico Estratégico de Crescimento',
+    description: 'Identifique o momento atual da sua empresa, gargalos e potencial de crescimento.',
+    images: ['/og-image.png'],
+  },
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: '/favicon.ico',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: '/og-image.png',
   },
 }
 
