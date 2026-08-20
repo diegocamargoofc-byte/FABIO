@@ -191,7 +191,7 @@ export function DiagnosticFlow() {
   }
 
   const handleSendWhatsApp = () => {
-    const WHATSAPP_NUMBER = "5513996145959"
+    const WHATSAPP_NUMBER = "5513998077383"
 
     const a = (id: number) => getAnswer(id)
 
